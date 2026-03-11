@@ -81,13 +81,6 @@ Aunque esta fase no incluye desarrollo, el sistema podría implementarse en el f
 
 ---
 
-## Fecha de Entrega
-
-Fase 1 del proyecto  
-Fecha límite: **23 de marzo**
-
----
-
 ## Licencia
 
 Este repositorio es utilizado únicamente con fines académicos.
