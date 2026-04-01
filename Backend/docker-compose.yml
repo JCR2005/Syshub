@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    container_name: syshub-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: syshub
+    ports:
+      - "5432:5432"
+    volumes:
+      - syshub_pgdata:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer
+    container_name: syshub-adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+
+volumes:
+  syshub_pgdata:
