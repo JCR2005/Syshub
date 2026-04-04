@@ -22,7 +22,11 @@ export class AuthService {
   }
 
   async confirmRegister(dto: ConfirmRegisterDto) {
-    return this.usersService.confirmRegister(dto.correo, dto.codigo, dto.contrasena);
+    return this.usersService.confirmRegister(
+      dto.correo,
+      dto.codigo,
+      dto.contrasena,
+    );
   }
 
   async login(dto: LoginDto) {
@@ -36,22 +40,51 @@ export class AuthService {
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
+    if (user.bloqueado) {
+      throw new UnauthorizedException('Tu usuario está bloqueado');
+    }
+
+    const rangos = await this.usersService.getUserRangos(user.id);
+    const normalizedRangos = rangos.map((rango) => rango.toLowerCase());
+    const roles = await this.usersService.getUserRoles(user.id);
+    const normalizedRoles = roles.map((role) => role.toLowerCase());
+    const hasStudentRole = normalizedRoles.includes('comun');
+    const hasAdminRole = normalizedRoles.includes('admin');
+
+    const availableModes =
+      hasStudentRole && hasAdminRole
+        ? ['student', 'admin']
+        : hasAdminRole
+          ? ['admin']
+          : ['student'];
+
+    const requiresModeSelection = availableModes.length > 1;
+    const activeMode = requiresModeSelection ? null : availableModes[0];
+
     const secret = process.env.JWT_SECRET ?? 'syshub_dev_secret';
-  const expiresIn = (process.env.JWT_EXPIRES_IN ?? '1d') as jwt.SignOptions['expiresIn'];
+    const expiresIn = (process.env.JWT_EXPIRES_IN ??
+      '1d') as jwt.SignOptions['expiresIn'];
     const token = jwt.sign(
       {
         sub: user.id,
         correo: user.correoInstitucional,
         nombre: user.nombre,
+        roles,
+        rangos,
       },
       secret,
       { expiresIn },
     );
-
+    
     return {
       id: user.id,
       correo: user.correoInstitucional,
       nombre: user.nombre,
+      roles,
+      rangos,
+      availableModes,
+      requiresModeSelection,
+      activeMode,
       accessToken: token,
       tokenType: 'Bearer',
       expiresIn,

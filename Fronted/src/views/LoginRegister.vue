@@ -4,32 +4,45 @@
       <div class="hero-content">
         <div class="brand">
           <div class="brand-icon">
-            <span>🎓</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="icon-svg">
+              <path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M22 10v6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
           </div>
           <span class="brand-text">Syshub</span>
         </div>
 
         <h1>
-          Welcome to the
-          <span class="accent">Engineering Hub</span>
+          Bienvenido a
+          <span class="accent">Syshub Académico</span>
         </h1>
         <p class="hero-subtitle">
-          Connect, collaborate, and share your projects with fellow computer science students.
+          Conecta, colabora y comparte tus proyectos con estudiantes de Ingeniería en Sistemas.
         </p>
 
         <div class="hero-features">
           <div class="feature">
-            <div class="feature-icon">📚</div>
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true" class="icon-svg">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </div>
             <div>
               <div class="feature-title">Share Knowledge</div>
-              <div class="feature-text">Browse academic projects and repositories</div>
+              <div class="feature-text">Explora proyectos y recursos académicos</div>
             </div>
           </div>
           <div class="feature">
-            <div class="feature-icon">💬</div>
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true" class="icon-svg">
+                <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </div>
             <div>
-              <div class="feature-title">Community Forum</div>
-              <div class="feature-text">Get help from TAs and peers</div>
+              <div class="feature-title">Foro Estudiantil</div>
+              <div class="feature-text">Recibe apoyo de auxiliares y compañeros</div>
             </div>
           </div>
         </div>
@@ -39,26 +52,29 @@
     <section class="panel">
       <div class="panel-inner">
         <header class="auth-header">
-          <h2>{{ isLogin ? 'Sign in to your account' : 'Create your account' }}</h2>
+          <h2>{{ isLogin ? 'Inicia sesión en tu cuenta' : 'Crea tu cuenta' }}</h2>
           <p class="muted">
-            {{ isLogin ? 'Enter your institutional credentials' : 'Join the engineering community' }}
+            {{ isLogin ? 'Ingresa tus credenciales institucionales' : 'Únete a la comunidad de ingeniería' }}
           </p>
         </header>
 
   <form class="auth-form" @submit.prevent="handleSubmit">
           <div class="field">
-            <label for="email">Institutional Email</label>
+            <label for="email">Correo institucional</label>
             <input
               id="email"
               v-model.trim="email"
               type="email"
-              placeholder="student@university.edu"
+              placeholder="estudiante@universidad.edu"
               required
             />
+            <p v-if="!isLogin && email && !isInstitutionalEmailValid" class="hint error">
+              Formato esperado: <strong>NombreApellido123456789@cunoc.edu.gt</strong>
+            </p>
           </div>
 
           <div class="field">
-            <label for="password">Password</label>
+            <label for="password">Contraseña</label>
             <input
               id="password"
               v-model="password"
@@ -66,10 +82,20 @@
               placeholder="••••••••"
               required
             />
+            <div v-if="!isLogin" class="password-rules">
+              <p class="hint">Requisitos de seguridad:</p>
+              <ul>
+                <li :class="{ ok: passwordChecks.minLength }">Mínimo 8 caracteres</li>
+                <li :class="{ ok: passwordChecks.uppercase }">Al menos una mayúscula</li>
+                <li :class="{ ok: passwordChecks.lowercase }">Al menos una minúscula</li>
+                <li :class="{ ok: passwordChecks.number }">Al menos un número</li>
+                <li :class="{ ok: passwordChecks.symbol }">Al menos un símbolo (!@#$...)</li>
+              </ul>
+            </div>
           </div>
 
           <div v-if="!isLogin" class="field">
-            <label for="confirm">Confirm Password</label>
+            <label for="confirm">Confirmar contraseña</label>
             <input
               id="confirm"
               v-model="confirmPassword"
@@ -77,10 +103,13 @@
               placeholder="••••••••"
               required
             />
+            <p v-if="confirmPassword && !passwordsMatch" class="hint error">
+              Las contraseñas no coinciden.
+            </p>
           </div>
 
           <div v-if="!isLogin && registerStep === 'confirm'" class="field">
-            <label for="code">Verification Code</label>
+            <label for="code">Código de verificación</label>
             <input
               id="code"
               v-model="verificationCode"
@@ -94,13 +123,13 @@
           <div v-if="isLogin" class="row">
             <label class="checkbox">
               <input v-model="remember" type="checkbox" />
-              Remember me
+              Recordarme
             </label>
-            <a class="link" href="#">Forgot password?</a>
+            <a class="link" href="#">¿Olvidaste tu contraseña?</a>
           </div>
 
           <button class="primary" type="submit" :disabled="isSubmitting">
-            {{ isLogin ? 'Sign In' : registerStep === 'request' ? 'Enviar código' : 'Confirmar registro' }}
+            {{ isLogin ? 'Ingresar' : registerStep === 'request' ? 'Enviar código' : 'Confirmar registro' }}
           </button>
 
           <button
@@ -122,19 +151,46 @@
           </p>
 
           <p class="switch">
-            {{ isLogin ? "Don't have an account?" : 'Already have an account?' }}
+            {{ isLogin ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?' }}
             <button type="button" class="link" @click="toggleMode">
-              {{ isLogin ? 'Create account' : 'Sign in' }}
+              {{ isLogin ? 'Crear cuenta' : 'Iniciar sesión' }}
             </button>
           </p>
         </form>
+      </div>
+
+      <div v-if="showModeSelector" class="mode-selector-backdrop">
+        <div class="mode-selector-card">
+          <h3>Elegir modo de ingreso</h3>
+          <p>
+            Tu cuenta tiene más de un rol. ¿Cómo quieres entrar hoy?
+          </p>
+
+          <div class="mode-options">
+            <button
+              v-for="mode in pendingModes"
+              :key="mode"
+              type="button"
+              class="mode-option"
+              :class="{ active: selectedMode === mode }"
+              @click="selectedMode = mode"
+            >
+              {{ mode === 'admin' ? 'Modo Admin' : 'Modo Estudiante' }}
+            </button>
+          </div>
+
+          <div class="mode-actions">
+            <button type="button" class="secondary" @click="cancelModeSelection">Cancelar</button>
+            <button type="button" class="primary" @click="confirmModeSelection">Continuar</button>
+          </div>
+        </div>
       </div>
     </section>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const isLogin = ref(true)
@@ -149,14 +205,87 @@ let resendTimer = null
 const isSubmitting = ref(false)
 const formMessage = ref('')
 const formStatus = ref('info')
+const showModeSelector = ref(false)
+const pendingModes = ref([])
+const selectedMode = ref('student')
+const pendingLoginData = ref(null)
 const router = useRouter()
 
 const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api'
+const institutionalEmailPattern = /^[a-záéíóúñ]+\d{9}@cunoc\.edu\.gt$/i
+
+const isInstitutionalEmailValid = computed(() =>
+  institutionalEmailPattern.test((email.value ?? '').trim()),
+)
+
+const passwordChecks = computed(() => {
+  const value = password.value ?? ''
+  return {
+    minLength: value.length >= 8,
+    uppercase: /[A-Z]/.test(value),
+    lowercase: /[a-z]/.test(value),
+    number: /\d/.test(value),
+    symbol: /[^A-Za-z\d]/.test(value),
+  }
+})
+
+const isStrongPassword = computed(() =>
+  Object.values(passwordChecks.value).every(Boolean),
+)
+
+const passwordsMatch = computed(() => password.value === confirmPassword.value)
 
 const toggleMode = () => {
   isLogin.value = !isLogin.value
   resetRegisterFields()
   formMessage.value = ''
+}
+
+const persistSession = (data, mode) => {
+  const storage = remember.value ? localStorage : sessionStorage
+  const fallbackStorage = remember.value ? sessionStorage : localStorage
+
+  fallbackStorage.removeItem('authToken')
+  fallbackStorage.removeItem('authUser')
+
+  if (data?.accessToken) {
+    storage.setItem('authToken', data.accessToken)
+  }
+
+  if (data?.id) {
+    storage.setItem('authUser', JSON.stringify({
+      id: data.id,
+      correo: data.correo,
+      nombre: data.nombre,
+      roles: Array.isArray(data.roles) ? data.roles : [],
+      rangos: Array.isArray(data.rangos) ? data.rangos : [],
+      activeMode: mode,
+    }))
+  }
+}
+
+const finalizeLogin = async (data, mode) => {
+  persistSession(data, mode)
+  formMessage.value = 'Login exitoso'
+  formStatus.value = 'success'
+  password.value = ''
+  await router.push(mode === 'admin' ? '/admin' : '/dashboard')
+}
+
+const cancelModeSelection = () => {
+  showModeSelector.value = false
+  pendingModes.value = []
+  pendingLoginData.value = null
+  selectedMode.value = 'student'
+}
+
+const confirmModeSelection = async () => {
+  if (!pendingLoginData.value) return
+  const mode = selectedMode.value === 'admin' ? 'admin' : 'student'
+
+  const payload = pendingLoginData.value
+  cancelModeSelection()
+  await finalizeLogin(payload, mode)
 }
 
 const resetRegisterFields = () => {
@@ -175,6 +304,20 @@ const resetRegisterFields = () => {
 const handleSubmit = async () => {
   formMessage.value = ''
   formStatus.value = 'info'
+
+  if (!isLogin.value && registerStep.value === 'request' && !isInstitutionalEmailValid.value) {
+    formMessage.value =
+      'Usa tu correo institucional con formato: NombreApellido123456789@cunoc.edu.gt'
+    formStatus.value = 'error'
+    return
+  }
+
+  if (!isLogin.value && registerStep.value === 'request' && !isStrongPassword.value) {
+    formMessage.value =
+      'Tu contraseña aún no cumple los requisitos mínimos. Revisa la guía debajo del campo contraseña.'
+    formStatus.value = 'error'
+    return
+  }
 
   if (!isLogin.value && registerStep.value === 'request' && password.value !== confirmPassword.value) {
     formMessage.value = 'Las contraseñas no coinciden'
@@ -200,23 +343,29 @@ const handleSubmit = async () => {
       }
 
       const data = await response.json().catch(() => null)
-      const storage = remember.value ? localStorage : sessionStorage
 
-      if (data?.accessToken) {
-        storage.setItem('authToken', data.accessToken)
-      }
-      if (data?.id) {
-        storage.setItem('authUser', JSON.stringify({
-          id: data.id,
-          correo: data.correo,
-          nombre: data.nombre,
-        }))
+      const modes = Array.isArray(data?.availableModes) ? data.availableModes : []
+      const requiresModeSelection =
+        data?.requiresModeSelection === true && modes.length > 1
+
+      if (requiresModeSelection) {
+        pendingLoginData.value = data
+        pendingModes.value = modes
+        selectedMode.value = modes.includes('student') ? 'student' : modes[0]
+        showModeSelector.value = true
+        formMessage.value = 'Selecciona el modo de ingreso para continuar.'
+        formStatus.value = 'info'
+        return
       }
 
-      formMessage.value = 'Login exitoso'
-      formStatus.value = 'success'
-      password.value = ''
-  await router.push('/dashboard')
+      const activeMode =
+        data?.activeMode === 'admin'
+          ? 'admin'
+          : data?.activeMode === 'student'
+            ? 'student'
+            : 'student'
+
+      await finalizeLogin(data, activeMode)
       return
     } catch (error) {
       formMessage.value = error instanceof Error ? error.message : 'Error inesperado'
@@ -329,15 +478,15 @@ const startCooldown = () => {
   min-height: 100vh;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  background: #0a0a0f;
-  color: #f5f5f7;
+  background: var(--bg-app);
+  color: var(--text-primary);
 }
 
 .hero {
   padding: clamp(2.5rem, 5vw, 5rem);
-  background: radial-gradient(circle at top left, rgba(130, 97, 255, 0.25), transparent 55%),
-    radial-gradient(circle at bottom, rgba(255, 95, 160, 0.2), transparent 55%),
-    #0f1020;
+  background: radial-gradient(circle at top left, var(--accent-soft), transparent 55%),
+    radial-gradient(circle at bottom, rgba(251, 146, 60, 0.14), transparent 55%),
+    var(--bg-surface-alt);
   display: flex;
   align-items: center;
 }
@@ -360,7 +509,7 @@ const startCooldown = () => {
   width: 42px;
   height: 42px;
   border-radius: 14px;
-  background: linear-gradient(135deg, #7c5cff, #ff5fa0);
+  background: linear-gradient(135deg, var(--accent-500), var(--accent-400));
   display: grid;
   place-items: center;
   font-size: 1.2rem;
@@ -377,21 +526,21 @@ h1 {
 
 .accent {
   display: block;
-  background: linear-gradient(135deg, #7c5cff, #ff5fa0);
+  background: linear-gradient(135deg, var(--accent-500), var(--accent-400));
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
 }
 
 .hero-subtitle {
-  color: #b7b8d6;
+  color: var(--text-soft);
   font-size: 1.05rem;
 }
 
 .hero-features {
   display: grid;
   gap: 1.25rem;
-  color: #b7b8d6;
+  color: var(--text-soft);
 }
 
 .feature {
@@ -404,14 +553,19 @@ h1 {
   width: 44px;
   height: 44px;
   border-radius: 14px;
-  background: rgba(124, 92, 255, 0.2);
+  background: var(--accent-soft);
   display: grid;
   place-items: center;
   font-size: 1.2rem;
 }
 
+.icon-svg {
+  width: 22px;
+  height: 22px;
+}
+
 .feature-title {
-  color: #f5f5f7;
+  color: var(--text-primary);
   font-weight: 600;
 }
 
@@ -424,7 +578,7 @@ h1 {
   align-items: center;
   justify-content: center;
   padding: clamp(2rem, 5vw, 4rem);
-  background: #0a0a0f;
+  background: var(--bg-app);
 }
 
 .panel-inner {
@@ -442,7 +596,7 @@ h1 {
 }
 
 .muted {
-  color: #9fa0b8;
+  color: var(--text-muted);
 }
 
 .auth-form {
@@ -457,19 +611,19 @@ h1 {
 
 label {
   font-size: 0.85rem;
-  color: #cfcfe4;
+  color: var(--text-soft);
 }
 
 input {
-  background: #11121b;
-  border: 1px solid #2a2b3c;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 0.8rem 1rem;
   color: inherit;
 }
 
 input:focus {
-  outline: 2px solid rgba(124, 92, 255, 0.7);
+  outline: 2px solid var(--focus-ring);
   border-color: transparent;
 }
 
@@ -480,9 +634,9 @@ input:focus {
 }
 
 .pill {
-  background: #11121b;
-  border: 1px solid #2a2b3c;
-  color: #c9c9d8;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-soft);
   padding: 0.7rem;
   border-radius: 12px;
   cursor: pointer;
@@ -490,9 +644,9 @@ input:focus {
 }
 
 .pill.active {
-  border-color: #7c5cff;
-  color: #fff;
-  background: rgba(124, 92, 255, 0.18);
+  border-color: var(--accent-500);
+  color: var(--accent-contrast);
+  background: var(--accent-soft);
 }
 
 .row {
@@ -509,9 +663,9 @@ input:focus {
 }
 
 .primary {
-  background: linear-gradient(90deg, #6aa7ff, #f25f9a);
+  background: linear-gradient(90deg, var(--accent-500), var(--accent-400));
   border: none;
-  color: #fff;
+  color: var(--accent-contrast);
   padding: 0.85rem;
   border-radius: 14px;
   font-weight: 600;
@@ -525,8 +679,8 @@ input:focus {
 
 .secondary {
   background: transparent;
-  border: 1px solid #2a2b3c;
-  color: #c9c9d8;
+  border: 1px solid var(--border-color);
+  color: var(--text-soft);
   padding: 0.75rem;
   border-radius: 14px;
   cursor: pointer;
@@ -534,19 +688,50 @@ input:focus {
 }
 
 .secondary:hover {
-  border-color: #7c5cff;
+  border-color: var(--accent-500);
 }
 
 .timer {
   text-align: center;
   font-size: 0.85rem;
-  color: #9fa0b8;
+  color: var(--text-muted);
+}
+
+.hint {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.hint.error {
+  color: var(--error);
+}
+
+.password-rules {
+  margin-top: 0.2rem;
+  background: var(--bg-muted);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 0.6rem 0.75rem;
+}
+
+.password-rules ul {
+  margin: 0.35rem 0 0;
+  padding-left: 1rem;
+  display: grid;
+  gap: 0.2rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.password-rules li.ok {
+  color: var(--success);
 }
 
 .link {
   background: none;
   border: none;
-  color: #7c5cff;
+  color: var(--accent-500);
   cursor: pointer;
   font-weight: 600;
   padding: 0;
@@ -555,7 +740,7 @@ input:focus {
 
 .switch {
   text-align: center;
-  color: #b6b6c8;
+  color: var(--text-soft);
 }
 
 .form-message {
@@ -564,15 +749,74 @@ input:focus {
 }
 
 .form-message.success {
-  color: #7dd3a8;
+  color: var(--success);
 }
 
 .form-message.error {
-  color: #f87171;
+  color: var(--error);
 }
 
 .form-message.info {
-  color: #9fa0b8;
+  color: var(--text-muted);
+}
+
+.mode-selector-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 8, 18, 0.72);
+  backdrop-filter: blur(4px);
+  display: grid;
+  place-items: center;
+  z-index: 40;
+  padding: 1rem;
+}
+
+.mode-selector-card {
+  width: min(420px, 100%);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  padding: 1.2rem;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.mode-selector-card h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.mode-selector-card p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 0.92rem;
+}
+
+.mode-options {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.mode-option {
+  border: 1px solid var(--border-color);
+  background: var(--bg-muted);
+  color: var(--text-soft);
+  border-radius: 12px;
+  padding: 0.65rem 0.8rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.mode-option.active {
+  border-color: var(--accent-500);
+  color: var(--text-primary);
+  background: var(--accent-soft);
+}
+
+.mode-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
 }
 
 @media (max-width: 900px) {
