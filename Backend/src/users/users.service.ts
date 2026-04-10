@@ -156,7 +156,7 @@ export class UsersService {
     });
   }
 
-   async getUserRangos(userId: number) {
+  async getUserRangos(userId: number) {
     const userRangos = await this.prisma.userRango.findMany({
       where: { userId },
       select: {
@@ -165,11 +165,11 @@ export class UsersService {
         },
       },
     });
-    
+
     return userRangos.map((item) => item.rango.nombre);
   }
 
-   async hasRango(userId: number, rangoName: string) {
+  async hasRango(userId: number, rangoName: string) {
     const rango = await this.prisma.userRango.findFirst({
       where: {
         userId,
@@ -293,7 +293,16 @@ export class UsersService {
   async getSystemClassification() {
     const db = this.prisma as any;
 
-    const [areas, tags, stacks, pensums, courses] = await Promise.all([
+    const safeList = async (label: string, fn: () => Promise<any[]>) => {
+      try {
+        return await fn();
+      } catch (error) {
+        console.error(`Error cargando ${label}`, error);
+        return [] as any[];
+      }
+    };
+
+    const areas = await safeList('areas', () =>
       db.areaTecnica.findMany({
         orderBy: { nombre: 'asc' },
         select: {
@@ -301,16 +310,29 @@ export class UsersService {
           nombre: true,
           descripcion: true,
           color: true,
+          id_pensum: true,
+          pensum: {
+            select: { nombre: true },
+          },
         },
       }),
+    );
+
+    const tags = await safeList('tags', () =>
       this.prisma.etiqueta.findMany({
         orderBy: { nombre_etiqueta: 'asc' },
         select: { id_etiqueta: true, nombre_etiqueta: true },
       }),
+    );
+
+    const stacks = await safeList('stacks', () =>
       this.prisma.stack.findMany({
         orderBy: { nombre_stack: 'asc' },
         select: { id_stack: true, nombre_stack: true },
       }),
+    );
+
+    const pensums = await safeList('pensums', () =>
       db.pensum.findMany({
         orderBy: { nombre: 'asc' },
         select: {
@@ -318,8 +340,16 @@ export class UsersService {
           nombre: true,
           descripcion: true,
           vigente: true,
+          carrera: {
+            select: {
+              color: true,
+            },
+          },
         },
       }),
+    );
+
+    const courses = await safeList('courses', () =>
       db.curso.findMany({
         orderBy: [{ semestre: 'asc' }, { codigo: 'asc' }],
         select: {
@@ -344,7 +374,18 @@ export class UsersService {
           },
         },
       }),
-    ]);
+    );
+
+    const carreras = await safeList('carreras', () =>
+      db.carrera.findMany({
+        orderBy: { nombre: 'asc' },
+        select: {
+          id_carrera: true,
+          nombre: true,
+          color: true,
+        },
+      }),
+    );
 
     return {
       areas: areas.map((item) => ({
@@ -352,6 +393,8 @@ export class UsersService {
         nombre: item.nombre,
         descripcion: item.descripcion,
         color: item.color,
+        pensumId: item.id_pensum,
+        pensumNombre: item.pensum?.nombre ?? null,
       })),
       tags: tags.map((item) => ({
         id: item.id_etiqueta,
@@ -366,6 +409,7 @@ export class UsersService {
         nombre: item.nombre,
         descripcion: item.descripcion,
         vigente: item.vigente,
+        color: item.carrera?.color ?? null,
       })),
       courses: courses.map((item) => ({
         id: item.id_curso,
@@ -378,40 +422,113 @@ export class UsersService {
         area: item.area?.nombre ?? null,
         areaColor: item.area?.color ?? null,
       })),
+      carreras: carreras.map((item) => ({
+        id: item.id_carrera,
+        nombre: item.nombre,
+        color: item.color,
+      })),
     };
+  }
+
+  async createCarrera(payload: { nombre: string; color?: string }) {
+    const db = this.prisma as any;
+
+    const nombre = (payload.nombre ?? '').trim();
+
+    if (!nombre) {
+      throw new BadRequestException('El nombre es requerido');
+    }
+
+    const existing = await db.carrera.findFirst({
+      where: {
+        nombre: { equals: nombre, mode: 'insensitive' },
+      },
+    });
+
+    if (existing) {
+      throw new BadRequestException('La carrera ya existe');
+    }
+
+    return db.carrera.create({
+      data: {
+        nombre,
+        color: payload.color?.trim() || null,
+      },
+    });
+  }
+  async deleteCarrera(carreraId: number) {
+    const db = this.prisma as any;
+    const linkedPensums = await db.pensum.count({
+      where: { id_carrera: carreraId },
+    });
+
+    if (linkedPensums > 0) {
+      throw new BadRequestException(
+        'No puedes eliminar la carrera porque tiene pensums asociados',
+      );
+    }
+
+    await db.carrera.delete({
+      where: { id_carrera: carreraId },
+    });
+
+    return { ok: true };
   }
 
   async createTechArea(payload: {
     nombre: string;
     descripcion?: string;
-    color?: string;
+    pensumId: number;
   }) {
     const db = this.prisma as any;
+
     const nombre = (payload.nombre ?? '').trim();
+    const pensumId = Number(payload.pensumId);
+
     if (!nombre) {
       throw new BadRequestException('El nombre del área es requerido');
     }
 
+    const pensum = await db.pensum.findUnique({
+      where: { id_pensum: pensumId },
+      select: {
+        id_pensum: true,
+        carrera: {
+          select: {
+            color: true,
+          },
+        },
+      },
+    });
+
+    if (!pensum) {
+      throw new NotFoundException('Pensum no encontrado');
+    }
+
     const existing = await db.areaTecnica.findFirst({
-      where: { nombre: { equals: nombre, mode: 'insensitive' } },
-      select: { id_area: true },
+      where: {
+        nombre: { equals: nombre, mode: 'insensitive' },
+        id_pensum: pensumId,
+      },
     });
 
     if (existing) {
-      throw new BadRequestException('El área técnica ya existe');
+      throw new BadRequestException('El área ya existe en este pensum');
     }
 
     return db.areaTecnica.create({
       data: {
         nombre,
         descripcion: payload.descripcion?.trim() || null,
-        color: payload.color?.trim() || null,
+        color: pensum.carrera?.color ?? null, // 🔥 AQUÍ ESTÁ LA MAGIA
+        id_pensum: pensumId,
       },
       select: {
         id_area: true,
         nombre: true,
         descripcion: true,
         color: true,
+        id_pensum: true,
       },
     });
   }
@@ -493,15 +610,32 @@ export class UsersService {
     nombre: string;
     descripcion?: string;
     vigente?: boolean;
+    carreraId: number;
   }) {
     const db = this.prisma as any;
     const nombre = (payload.nombre ?? '').trim();
+    const carreraId = Number(payload.carreraId);
     if (!nombre) {
       throw new BadRequestException('El nombre del pensum es requerido');
     }
+    if (!carreraId) {
+      throw new BadRequestException('La carrera es requerida');
+    }
+
+    const carrera = await db.carrera.findUnique({
+      where: { id_carrera: carreraId },
+      select: { id_carrera: true },
+    });
+
+    if (!carrera) {
+      throw new NotFoundException('Carrera no encontrada');
+    }
 
     const existing = await db.pensum.findFirst({
-      where: { nombre: { equals: nombre, mode: 'insensitive' } },
+      where: {
+        nombre: { equals: nombre, mode: 'insensitive' },
+        id_carrera: carreraId,
+      },
       select: { id_pensum: true },
     });
 
@@ -514,6 +648,7 @@ export class UsersService {
         nombre,
         descripcion: payload.descripcion?.trim() || null,
         vigente: payload.vigente ?? true,
+        id_carrera: carreraId,
       },
       select: {
         id_pensum: true,
@@ -603,10 +738,17 @@ export class UsersService {
     if (areaId !== null) {
       const area = await db.areaTecnica.findUnique({
         where: { id_area: areaId },
-        select: { id_area: true },
+        select: { id_area: true, id_pensum: true },
       });
+
       if (!area) {
         throw new NotFoundException('Área técnica no encontrada');
+      }
+
+      if (area.id_pensum !== pensumId) {
+        throw new BadRequestException(
+          'El área no pertenece al pensum seleccionado',
+        );
       }
     }
 
@@ -830,8 +972,8 @@ export class UsersService {
         },
         rangos: {
           select: {
-            rango: { select: { nombre: true } }
-          }
+            rango: { select: { nombre: true } },
+          },
         },
       },
     });
@@ -847,7 +989,7 @@ export class UsersService {
       carnet: user.carnet,
       bloqueado: user.bloqueado,
       roles: user.roles.map((link) => link.role.nombre),
-      rangos: user.rangos.map(link => link.rango.nombre),
+      rangos: user.rangos.map((link) => link.rango.nombre),
     };
   }
 
@@ -1012,27 +1154,30 @@ export class UsersService {
   }
 
   async setUserRango(userId: number, rangoNombre: string, enabled: boolean) {
-  const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { id: true } })
-  if (!user) throw new NotFoundException('Usuario no encontrado')
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true },
+    });
+    if (!user) throw new NotFoundException('Usuario no encontrado');
 
-  const rango = await this.prisma.rango.upsert({
-    where: { nombre: rangoNombre },
-    update: {},
-    create: { nombre: rangoNombre },
-    select: { id: true },
-  })
+    const rango = await this.prisma.rango.upsert({
+      where: { nombre: rangoNombre },
+      update: {},
+      create: { nombre: rangoNombre },
+      select: { id: true },
+    });
 
-  if (enabled) {
-    await this.prisma.userRango.createMany({
-      data: [{ userId, rangoId: rango.id }],
-      skipDuplicates: true,
-    })
-  } else {
-    await this.prisma.userRango.deleteMany({
-      where: { userId, rangoId: rango.id },
-    })
+    if (enabled) {
+      await this.prisma.userRango.createMany({
+        data: [{ userId, rangoId: rango.id }],
+        skipDuplicates: true,
+      });
+    } else {
+      await this.prisma.userRango.deleteMany({
+        where: { userId, rangoId: rango.id },
+      });
+    }
+
+    return this.getAdminManagementUserById(userId);
   }
-
-  return this.getAdminManagementUserById(userId)
-}
 }

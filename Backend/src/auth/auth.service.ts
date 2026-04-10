@@ -75,7 +75,7 @@ export class AuthService {
       secret,
       { expiresIn },
     );
-    
+
     return {
       id: user.id,
       correo: user.correoInstitucional,

@@ -24,12 +24,13 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
+import { ApiProperty } from '@nestjs/swagger';
+
 type AuthenticatedRequest = Request & {
   user?: {
     sub?: number | string;
   };
 };
-
 
 @Controller('users')
 export class UsersController {
@@ -136,14 +137,25 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   async createArea(
     @Req() request: AuthenticatedRequest,
-    @Body() body: { nombre?: string; descripcion?: string; color?: string },
+    @Body()
+    body: {
+      nombre?: string;
+      descripcion?: string;
+      color?: string;
+      pensumId?: number;
+    },
   ) {
     await this.assertAdmin(request);
+
+    if (!body.pensumId) {
+      throw new BadRequestException('El pensum es requerido');
+    }
 
     const area = await this.usersService.createTechArea({
       nombre: body.nombre ?? '',
       descripcion: body.descripcion,
-      color: body.color,
+
+      pensumId: body.pensumId,
     });
 
     return { ok: true, area };
@@ -153,17 +165,52 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   async createPensum(
     @Req() request: AuthenticatedRequest,
-    @Body() body: { nombre?: string; descripcion?: string; vigente?: boolean },
+    @Body()
+    body: {
+      nombre?: string;
+      descripcion?: string;
+      vigente?: boolean;
+      carreraId?: number;
+    },
   ) {
     await this.assertAdmin(request);
+
+    if (!body.carreraId) {
+      throw new BadRequestException('La carrera es requerida');
+    }
 
     const pensum = await this.usersService.createPensum({
       nombre: body.nombre ?? '',
       descripcion: body.descripcion,
       vigente: body.vigente,
+      carreraId: Number(body.carreraId),
     });
 
     return { ok: true, pensum };
+  }
+
+  @Post('admin/classification/carreras')
+  @UseGuards(JwtAuthGuard)
+  async createCarrera(
+    @Req() request: AuthenticatedRequest,
+    @Body() body: { nombre?: string; color?: string },
+  ) {
+    await this.assertAdmin(request);
+    const carrera = await this.usersService.createCarrera({
+      nombre: body.nombre ?? '',
+      color: body.color,
+    });
+    return { ok: true, carrera };
+  }
+
+  @Delete('admin/classification/carreras/:id')
+  @UseGuards(JwtAuthGuard)
+  async deleteCarrera(
+    @Req() request: AuthenticatedRequest,
+    @Param('id') id: string,
+  ) {
+    await this.assertAdmin(request);
+    return this.usersService.deleteCarrera(Number(id));
   }
 
   @Post('admin/classification/courses')
@@ -385,6 +432,6 @@ export class UsersController {
     @Param('id') id: string,
     @Body() body: { rango: string; enabled: boolean },
   ) {
-    return this.usersService.setUserRango(Number(id), body.rango, body.enabled)
+    return this.usersService.setUserRango(Number(id), body.rango, body.enabled);
   }
 }
