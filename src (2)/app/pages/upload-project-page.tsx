@@ -23,6 +23,9 @@ export function UploadProjectPage() {
   const [currentTag, setCurrentTag] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [isDragging, setIsDragging] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [responseMessage, setResponseMessage] = useState<string | null>(null);
 
   const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && currentTag.trim()) {
@@ -74,8 +77,64 @@ export function UploadProjectPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
-    navigate("/dashboard");
+    if (!projectTitle.trim() || !description.trim()) return;
+
+    // Prepare form data
+    const form = new FormData();
+    form.append('nombre', projectTitle);
+    form.append('descripcion', description);
+
+    // determine ownerId from localStorage authUser if present
+    let ownerId = '1';
+    try {
+      const raw = localStorage.getItem('authUser') || sessionStorage.getItem('authUser');
+      if (raw) {
+        const u = JSON.parse(raw);
+        ownerId = String(u.id || u.id_usuario || u.userId || 1);
+      }
+    } catch {
+      ownerId = '1';
+    }
+    form.append('ownerId', ownerId);
+
+    tags.forEach(t => form.append('tags[]', t));
+    // stacks are treated as tags here if needed; the original UI grouped stacks+tags
+    // If you have a separate stacks state, append 'stacks[]' similarly
+
+    uploadedFiles.forEach((f) => form.append('files', f));
+
+    // Send with progress
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `${process.env.REACT_APP_API_URL || 'http://localhost:3000'}/repositories`);
+    const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+    if (token) xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+
+    xhr.upload.onprogress = (ev) => {
+      if (ev.lengthComputable) {
+        const pct = Math.round((ev.loaded / ev.total) * 100);
+        setProgress(pct);
+      }
+    };
+
+    xhr.onload = () => {
+      setIsUploading(false);
+      if (xhr.status >= 200 && xhr.status < 300) {
+        setResponseMessage('Repositorio publicado correctamente.');
+        navigate('/dashboard');
+      } else {
+        setResponseMessage(`Error al subir: ${xhr.status} ${xhr.statusText}`);
+      }
+    };
+
+    xhr.onerror = () => {
+      setIsUploading(false);
+      setResponseMessage('Error de red al intentar subir el repositorio.');
+    };
+
+    setIsUploading(true);
+    setProgress(0);
+    setResponseMessage(null);
+    xhr.send(form);
   };
 
   const getFileIcon = (fileName: string) => {
@@ -140,20 +199,33 @@ export function UploadProjectPage() {
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-6 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Upload Academic Project</h1>
+          <h1 className="text-3xl font-bold mb-2">Subir Proyecto Académico</h1>
           <p className="text-muted-foreground">
-            Share your work with the community and get feedback from peers and instructors
+            Comparte tu trabajo con la comunidad y recibe retroalimentación de compañeros e instructores
           </p>
+          {isUploading && (
+            <div className="mt-4">
+              <div className="w-full bg-gray-700 rounded h-3 overflow-hidden">
+                <div className="bg-green-500 h-3" style={{ width: `${progress}%` }} />
+              </div>
+              <p className="text-sm text-muted-foreground mt-1">Subiendo... {progress}%</p>
+            </div>
+          )}
+          {responseMessage && (
+            <div className="mt-4 p-3 bg-yellow-900/30 rounded">
+              <p className="text-sm">{responseMessage}</p>
+            </div>
+          )}
         </div>
 
         <form onSubmit={handleSubmit}>
           <Card className="p-8 border-border space-y-8">
             {/* Project Title */}
             <div className="space-y-2">
-              <Label htmlFor="title">Project Title</Label>
+              <Label htmlFor="title">Título del Proyecto</Label>
               <Input
                 id="title"
-                placeholder="e.g., E-Commerce Web Application with React"
+                placeholder="ej., Aplicación web de e-commerce con React"
                 value={projectTitle}
                 onChange={(e) => setProjectTitle(e.target.value)}
                 className="bg-muted border-border"
@@ -163,32 +235,31 @@ export function UploadProjectPage() {
 
             {/* Description */}
             <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description">Descripción</Label>
               <Textarea
                 id="description"
-                placeholder="Provide a detailed description of your project, its features, and what you learned..."
+                placeholder="Proporciona una descripción detallada del proyecto, sus características y lo que aprendiste..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="bg-muted border-border min-h-[150px] resize-y"
                 required
               />
               <p className="text-xs text-muted-foreground">
-                Minimum 50 characters. Be descriptive!
+                Mínimo 50 caracteres. ¡Sé descriptivo!
               </p>
             </div>
 
             {/* Tech Stack Tags */}
             <div className="space-y-2">
-              <Label htmlFor="tags">Tech Stack / Tags</Label>
+              <Label htmlFor="tags">Stack Tecnológico / Etiquetas</Label>
               <Input
                 id="tags"
-                placeholder="Type a technology and press Enter (e.g., React, Python, MongoDB)"
+                placeholder="Escribe una tecnología y presiona Enter (ej., React, Python, MongoDB)"
                 value={currentTag}
                 onChange={(e) => setCurrentTag(e.target.value)}
                 onKeyDown={handleAddTag}
                 className="bg-muted border-border"
               />
-              
               {tags.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-3">
                   {tags.map((tag) => (
@@ -216,7 +287,7 @@ export function UploadProjectPage() {
 
             {/* File Upload */}
             <div className="space-y-2">
-              <Label>Project Files</Label>
+              <Label>Archivos del Proyecto</Label>
               
               <div
                 onDragOver={handleDragOver}
@@ -244,10 +315,10 @@ export function UploadProjectPage() {
                 />
                 
                 <h3 className="font-semibold mb-2">
-                  Drag and drop files here
+                  Arrastra y suelta archivos aquí
                 </h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  or click to browse
+                  o haz clic para buscar
                 </p>
                 
                 <Button
@@ -260,14 +331,14 @@ export function UploadProjectPage() {
                 </Button>
                 
                 <p className="text-xs text-muted-foreground mt-4">
-                  Supported formats: .zip, .pdf, .rar (Max 50MB)
+                  Formatos soportados: .zip, .pdf, .rar (Máx 50MB)
                 </p>
               </div>
 
               {/* Uploaded Files List */}
               {uploadedFiles.length > 0 && (
                 <div className="mt-4 space-y-2">
-                  <p className="text-sm font-medium">Uploaded Files:</p>
+                  <p className="text-sm font-medium">Archivos cargados:</p>
                   {uploadedFiles.map((file, index) => (
                     <div
                       key={index}
@@ -305,13 +376,14 @@ export function UploadProjectPage() {
                 onClick={() => navigate("/dashboard")}
                 className="flex-1 border-border"
               >
-                Cancel
+                Cancelar
               </Button>
               <Button
                 type="submit"
                 className="flex-1 bg-gradient-to-r from-blue-accent to-pink-accent hover:opacity-90"
+                disabled={isUploading}
               >
-                Publish Repository
+                {isUploading ? 'Subiendo...' : 'Publicar Repositorio'}
               </Button>
             </div>
           </Card>
@@ -319,7 +391,7 @@ export function UploadProjectPage() {
 
         {/* Info Card */}
         <Card className="mt-6 p-6 border-border bg-gradient-to-br from-blue-accent/5 to-pink-accent/5">
-          <h3 className="font-semibold mb-2">📋 Submission Guidelines</h3>
+          <h3 className="font-semibold mb-2">Submission Guidelines</h3>
           <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
             <li>Make sure your project files are properly compressed</li>
             <li>Include a README.md file explaining how to run your project</li>
