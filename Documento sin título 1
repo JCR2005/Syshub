@@ -1,0 +1,52 @@
+producto{
+	codProducto
+	nombreProducto
+	precSuge
+}
+
+DetVenta{
+	codDetVenta
+	codVenta
+	codCantidad
+	codProducto
+	MontoTotal
+	
+}
+
+venta{
+	codVenta
+	dniCliente
+	codEmp
+	montoTotal
+	cantidad
+	fecha
+}
+
+Marca{
+	codMarca
+	codPorducto
+	nombre
+}
+cliente{
+	dni
+	nombre
+	apellido
+	direccion
+	telefono
+}
+empleado{
+
+	codEmpleado
+	nombre
+	
+}
+
+
+1. 	SELECT p.nombreProducto 
+	FROM PRODUCTO p
+	WHERE p.codProducto IN (SELECT d.codProducto 
+				FROM DetVenta d 
+				WHERE d.codVenta IN (Select v.codVenta 
+						     FROM VENTA v 
+						     WHERE DATEDIFF(NOW(),MOUNTH(v.fecha))>5) 
+				); 

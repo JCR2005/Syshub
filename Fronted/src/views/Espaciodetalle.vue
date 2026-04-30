@@ -201,9 +201,8 @@
           </div>
         </section>
 
-        <!-- ── REPOS tab ──────────────────────────────────────────────────── -->
-        <section v-if="activeTab === 'repos'" class="tab-content">
-          <div v-if="canCreate" class="action-card">
+       <section v-if="activeTab === 'repos'" class="tab-content">
+          <div  class="action-card">
             <div class="action-card-header">
               <svg viewBox="0 0 24 24" class="ac-icon"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
               <h3>Vincular repositorio</h3>
@@ -226,7 +225,12 @@
               <div class="item-body">
                 <h4 class="item-title">{{ repo.repositorio?.nombre }}</h4>
                 <p class="item-desc">{{ repo.repositorio?.descripcion }}</p>
-              </div>
+                
+                <div v-if="canManageRepos && repo.repositorio?.usuarios?.length > 0" class="highlight-pill" style="margin-top: 5px; display: inline-flex; align-items: center; gap: 4px; background: rgba(245,158,11,0.12); color: #f59e0b;">
+                  <svg viewBox="0 0 24 24" style="width: 12px; height: 12px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2m8-10a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                  <span>Estudiante: {{ repo.repositorio.usuarios[0].usuario.nombre }}</span>
+                </div>
+                </div>
               <div class="item-actions">
                 <span v-if="repo.destacado" class="highlight-pill">Destacado</span>
                 <button v-if="canManageRepos" class="ghost-sm" @click="toggleDestacado(repo)">
@@ -236,7 +240,6 @@
             </div>
           </div>
         </section>
-
         <!-- ── AUXILIARES tab ─────────────────────────────────────────────── -->
         <section v-if="activeTab === 'auxiliares'" class="tab-content">
           <div v-if="canManageAux" class="action-card">
@@ -539,6 +542,22 @@ const createResource = async () => {
     console.error("Error al publicar:", error);
   } finally {
     submitting.value = false;
+  }
+};
+
+const fetchRepositorios = async () => {
+  if (!espacioId) return;
+  try {
+    // Esta es la ruta exacta que creamos en tu RepositoriesController
+    const response = await fetch(`${API_URL}/repositories/espacio/${espacioId}`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}` // Asegúrate de mandar el token
+      }
+    });
+    const data = await response.json();
+    listaRepositorios.value = data; // Aquí se guarda la lista filtrada que manda el Back
+  } catch (error) {
+    console.error('Error al cargar repos:', error);
   }
 };
 async function linkRepo() {

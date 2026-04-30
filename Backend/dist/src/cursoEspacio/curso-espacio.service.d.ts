@@ -19,16 +19,6 @@ export declare class CursoEspacioService {
         tiposRecurso: any;
         auxiliares: any;
     }>;
-    getRepositoriosDeEspacio(espacioId: number, usuarioId: number, isAuxiliar: boolean): Promise<{
-        id_pensum: number | null;
-        id_repositorio: number;
-        nombre: string;
-        descripcion: string;
-        visibilidad: string;
-        estrellas: number;
-        vistas: number;
-        id_curso: number | null;
-    }[]>;
     createEspacio(userId: number, payload: {
         cursoId: number;
         anio: number;

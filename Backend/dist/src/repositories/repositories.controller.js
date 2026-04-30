@@ -248,7 +248,7 @@ let RepositoriesController = class RepositoriesController {
         const rolesUsuario = req.user.roles || [];
         const isAuxiliar = rolesUsuario.some((rol) => rol.nombre.toLowerCase() === 'auxiliar' ||
             rol.nombre.toLowerCase() === 'admin');
-        return this.repositoriosService.getRepositoriosPorEspacio(Number(espacioId), usuarioId, isAuxiliar);
+        return this.repoService.getRepositoriosPorEspacio(Number(espacioId), usuarioId, isAuxiliar);
     }
 };
 exports.RepositoriesController = RepositoriesController;

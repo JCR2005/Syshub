@@ -426,7 +426,7 @@ async getReposByEspacio(
     rol.nombre.toLowerCase() === 'admin'
   );
 
-  return this.repositoriosService.getRepositoriosPorEspacio(
+  return this.repoService.getRepositoriosPorEspacio(
     Number(espacioId),
     usuarioId,
     isAuxiliar

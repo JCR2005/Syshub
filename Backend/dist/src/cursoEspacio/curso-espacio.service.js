@@ -162,24 +162,6 @@ let CursoEspacioService = class CursoEspacioService {
             })),
         };
     }
-    async getRepositoriosDeEspacio(espacioId, usuarioId, isAuxiliar) {
-        if (isAuxiliar) {
-            return this.prisma.repositorio.findMany({
-                where: { id_espacio: espacioId },
-                include: {
-                    autor: true
-                }
-            });
-        }
-        else {
-            return this.prisma.repositorio.findMany({
-                where: {
-                    id_espacio: espacioId,
-                    id_usuario: usuarioId
-                }
-            });
-        }
-    }
     async createEspacio(userId, payload) {
         if (!(await this.isAuxiliar(userId))) {
             throw new common_1.ForbiddenException('Solo auxiliares pueden crear espacios de curso');

@@ -165,26 +165,7 @@ export class CursoEspacioService {
       })),
     };
   }
-  // Dentro de tu clase XxxxxService
-async getRepositoriosDeEspacio(espacioId: number, usuarioId: number, isAuxiliar: boolean) {
-  if (isAuxiliar) {
-    // El auxiliar ve todo lo del espacio
-    return this.prisma.repositorio.findMany({
-      where: { id_espacio: espacioId },
-      include: { 
-        autor: true // Para que el auxiliar sepa de quién es cada repo
-      }
-    });
-  } else {
-    // El estudiante solo ve lo que él creó en ese espacio
-    return this.prisma.repositorio.findMany({
-      where: { 
-        id_espacio: espacioId,
-        id_usuario: usuarioId 
-      }
-    });
-  }
-}
+  
   async createEspacio(
     userId: number,
     payload: { cursoId: number; anio: number; semestre: number },

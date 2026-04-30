@@ -156,6 +156,15 @@ export declare class RepositoriesController {
             nombre: string;
         };
     }>;
-    getReposByEspacio(espacioId: string, req: any): Promise<any>;
+    getReposByEspacio(espacioId: string, req: any): Promise<{
+        id_repositorio: number;
+        nombre: string;
+        descripcion: string;
+        visibilidad: string;
+        estrellas: number;
+        vistas: number;
+        id_pensum: number | null;
+        id_curso: number | null;
+    }[]>;
 }
 export {};
