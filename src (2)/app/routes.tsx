@@ -9,6 +9,7 @@ import { UploadResourcePage } from "./pages/upload-resource-page";
 import { ModerationPage } from "./pages/moderation-page";
 import { PublishArticlePage } from "./pages/publish-article-page";
 import { DemoPage } from "./pages/demo-page";
+import { RepositoriesShowcasePage } from "./pages/repositories-showcase-page";
 import { RootLayout } from "./components/root-layout";
 
 export const router = createBrowserRouter([
@@ -51,6 +52,10 @@ export const router = createBrowserRouter([
       {
         path: "publish-article",
         Component: PublishArticlePage,
+      },
+      {
+        path: "repositories-showcase",
+        Component: RepositoriesShowcasePage,
       },
       {
         path: "admin",

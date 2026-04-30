@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "remote": {
+    "sourceType": "frontend",
+    "sourceUrl": "http://localhost:5173/repositories/2",
+    "cloneUrl": "http://localhost:3000/api/repositories/public/2/clone",
+    "apiBase": "http://localhost:3000/api",
+    "ownerId": null,
+    "repositoryId": 2
+  },
+  "clonedAt": "2026-04-22T06:23:51.096Z"
+}

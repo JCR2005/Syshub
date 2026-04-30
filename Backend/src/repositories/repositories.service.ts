@@ -114,6 +114,18 @@ type RepositoryTransactionClient = {
       data: { id_stack: number; id_repositorio: number };
     }): Promise<unknown>;
   };
+  cursoEspacio: {
+    findMany(args: {
+      where: { id_curso: number; estado?: string };
+      select: { id_espacio: true; estado?: string };
+    }): Promise<{ id_espacio: number; estado?: string }[]>;
+  };
+  cursoEspacioEstudiante: {
+    findFirst(args: {
+      where: { id_espacio: number; id_usuario: number };
+      select: { id: true };
+    }): Promise<{ id: number } | null>;
+  };
   archivo: {
     create(args: {
       data: {
@@ -316,6 +328,32 @@ export class RepositoriesService {
 
           normalizedCursoId = selectedCourse.id_curso;
           normalizedPensumId ??= selectedCourse.id_pensum;
+
+          const espaciosActivos = await t.cursoEspacio.findMany({
+            where: { id_curso: normalizedCursoId, estado: 'activo' },
+            select: { id_espacio: true },
+          });
+
+          if (!espaciosActivos.length) {
+            throw new ForbiddenException(
+              'El curso no está activo en ningún espacio disponible',
+            );
+          }
+
+          const hasMembership = await Promise.all(
+            espaciosActivos.map((espacio) =>
+              t.cursoEspacioEstudiante.findFirst({
+                where: { id_espacio: espacio.id_espacio, id_usuario: data.ownerId },
+                select: { id: true },
+              }),
+            ),
+          );
+
+          if (!hasMembership.some(Boolean)) {
+            throw new ForbiddenException(
+              'Debes unirte al curso antes de asociar un repositorio',
+            );
+          }
         }
 
         const repo = await t.repositorio.create({
@@ -599,6 +637,54 @@ export class RepositoriesService {
       return uploaded;
     });
   }
+
+  async getRepositoriosPorEspacio(espacioId: number, usuarioId: number, isAuxiliar: boolean) {
+  if (isAuxiliar) {
+    // EL AUXILIAR VE TODO:
+    // Filtramos usando la relación con la tabla pivote CursoEspacioRepositorio
+    return this.prisma.repositorio.findMany({
+      where: {
+        cursoEspacios: {
+          some: {
+            id_espacio: espacioId,
+          },
+        },
+      },
+      include: {
+        // Traemos los dueños del repositorio original
+        usuarios: {
+          include: {
+            usuario: {
+              select: {
+                id: true,
+                nombre: true,
+                correoInstitucional: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  } else {
+    // EL ESTUDIANTE SOLO VE LO SUYO:
+    return this.prisma.repositorio.findMany({
+      where: {
+        // Debe pertenecer al espacio del curso...
+        cursoEspacios: {
+          some: {
+            id_espacio: espacioId,
+          },
+        },
+        // ... Y además el usuario actual debe ser dueño del repo
+        usuarios: {
+          some: {
+            id_usuario: usuarioId,
+          },
+        },
+      },
+    });
+  }
+}
 
   async getRepositoryOptions() {
     const db = this.prisma as any;

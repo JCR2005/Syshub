@@ -4,7 +4,8 @@
       <div class="brand-block">
         <div class="brand-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" class="icon-svg">
-            <path d="M12 2 4 5v6c0 5 3.5 9.7 8 11 4.5-1.3 8-6 8-11V5l-8-3Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M12 2 4 5v6c0 5 3.5 9.7 8 11 4.5-1.3 8-6 8-11V5l-8-3Z" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
         </div>
         <div>
@@ -24,19 +25,24 @@
 
     <main class="admin-content">
       <div class="tab-row" role="tablist">
-        <button class="tab-btn" :class="{ active: activeTab === 'users' }" role="tab" type="button" @click="activeTab = 'users'">
+        <button class="tab-btn" :class="{ active: activeTab === 'users' }" role="tab" type="button"
+          @click="activeTab = 'users'">
           User Management
         </button>
-        <button class="tab-btn" :class="{ active: activeTab === 'system' }" role="tab" type="button" @click="activeTab = 'system'">
+        <button class="tab-btn" :class="{ active: activeTab === 'system' }" role="tab" type="button"
+          @click="activeTab = 'system'">
           System Classification
         </button>
-        <button class="tab-btn" :class="{ active: activeTab === 'forum' }" role="tab" type="button" @click="activeTab = 'forum'">
+        <button class="tab-btn" :class="{ active: activeTab === 'forum' }" role="tab" type="button"
+          @click="activeTab = 'forum'">
           Sys-Reddit
         </button>
-        <button class="tab-btn" :class="{ active: activeTab === 'curadoria' }" role="tab" type="button" @click="activeTab = 'curadoria'">
+        <button class="tab-btn" :class="{ active: activeTab === 'curadoria' }" role="tab" type="button"
+          @click="activeTab = 'curadoria'">
           Curaduría Auxiliar
         </button>
-        <button class="tab-btn" :class="{ active: activeTab === 'moderation' }" role="tab" type="button" @click="activeTab = 'moderation'">
+        <button class="tab-btn" :class="{ active: activeTab === 'moderation' }" role="tab" type="button"
+          @click="activeTab = 'moderation'">
           Global Moderation
           <span class="pending-pill">2</span>
         </button>
@@ -73,7 +79,12 @@
           <table>
             <thead>
               <tr>
-                <th>Name</th><th>Email</th><th>ID</th><th>Roles</th><th>Status</th><th>Actions</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>ID</th>
+                <th>Roles</th>
+                <th>Status</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -90,32 +101,20 @@
                   <!-- MODO EDICIÓN: toggles de rango -->
                   <div v-if="editingUserId === user.id" class="rango-toggles">
                     <label class="rango-toggle" :class="{ active: (user.rangos ?? []).includes('Auxiliar') }">
-                      <input
-                        type="checkbox"
-                        :checked="(user.rangos ?? []).includes('Auxiliar')"
-                        :disabled="busyUserId === user.id"
-                        @change="toggleRango(user, 'Auxiliar')"
-                      />
+                      <input type="checkbox" :checked="(user.rangos ?? []).includes('Auxiliar')"
+                        :disabled="busyUserId === user.id" @change="toggleRango(user, 'Auxiliar')" />
                       <span class="toggle-track"></span>
                       <span class="toggle-label aux">Auxiliar</span>
                     </label>
                     <label class="rango-toggle" :class="{ active: (user.rangos ?? []).includes('Moderador') }">
-                      <input
-                        type="checkbox"
-                        :checked="(user.rangos ?? []).includes('Moderador')"
-                        :disabled="busyUserId === user.id"
-                        @change="toggleRango(user, 'Moderador')"
-                      />
+                      <input type="checkbox" :checked="(user.rangos ?? []).includes('Moderador')"
+                        :disabled="busyUserId === user.id" @change="toggleRango(user, 'Moderador')" />
                       <span class="toggle-track"></span>
                       <span class="toggle-label mod">Moderador</span>
                     </label>
                     <label class="rango-toggle" :class="{ active: user.roles.includes('admin') }">
-                      <input
-                        type="checkbox"
-                        :checked="user.roles.includes('admin')"
-                        :disabled="busyUserId === user.id"
-                        @change="toggleAdmin(user)"
-                      />
+                      <input type="checkbox" :checked="user.roles.includes('admin')" :disabled="busyUserId === user.id"
+                        @change="toggleAdmin(user)" />
                       <span class="toggle-track"></span>
                       <span class="toggle-label admin-lbl">Admin</span>
                     </label>
@@ -141,30 +140,36 @@
                     <!-- Modo edición: botón Listo -->
                     <template v-if="editingUserId === user.id">
                       <button class="icon-btn success" type="button" @click="editingUserId = null" title="Listo">
-                        <svg viewBox="0 0 24 24" class="mini-icon"><path d="m5 12 4 4L19 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                        <svg viewBox="0 0 24 24" class="mini-icon">
+                          <path d="m5 12 4 4L19 6" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
                       </button>
                     </template>
 
                     <!-- Modo vista: botones editar y bloquear -->
                     <template v-else>
-                      <button
-                        class="icon-btn"
-                        type="button"
-                        :disabled="busyUserId === user.id"
-                        @click="editingUserId = user.id"
-                        title="Editar rangos"
-                      >
-                        <svg viewBox="0 0 24 24" class="mini-icon"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                      <button class="icon-btn" type="button" :disabled="busyUserId === user.id"
+                        @click="editingUserId = user.id" title="Editar rangos">
+                        <svg viewBox="0 0 24 24" class="mini-icon">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        </svg>
                       </button>
-                      <button
-                        class="icon-btn danger"
-                        type="button"
-                        :disabled="busyUserId === user.id"
-                        @click="toggleBlocked(user)"
-                        :title="user.bloqueado ? 'Activar usuario' : 'Bloquear usuario'"
-                      >
-                        <svg v-if="user.bloqueado" viewBox="0 0 24 24" class="mini-icon"><path d="m5 13 4 4L19 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
-                        <svg v-else viewBox="0 0 24 24" class="mini-icon"><path d="M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /><path d="m6 6 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+                      <button class="icon-btn danger" type="button" :disabled="busyUserId === user.id"
+                        @click="toggleBlocked(user)" :title="user.bloqueado ? 'Activar usuario' : 'Bloquear usuario'">
+                        <svg v-if="user.bloqueado" viewBox="0 0 24 24" class="mini-icon">
+                          <path d="m5 13 4 4L19 7" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <svg v-else viewBox="0 0 24 24" class="mini-icon">
+                          <path d="M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" />
+                          <path d="m6 6 12 12" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" />
+                        </svg>
                       </button>
                     </template>
                   </div>
@@ -192,67 +197,59 @@
         <article class="panel">
           <div class="block-header">
             <h3>Tech Areas</h3>
-           <div class="inline-form">
-  <input v-model.trim="newArea.nombre" placeholder="Nombre del área" />
-  <input v-model.trim="newArea.descripcion" placeholder="Descripción (opcional)" />
+            <div class="inline-form">
+              <input v-model.trim="newArea.nombre" placeholder="Nombre del área" />
+              <input v-model.trim="newArea.descripcion" placeholder="Descripción (opcional)" />
 
-  <select v-model.number="newArea.pensumId">
-    <option :value="null">Selecciona un pensum</option>
-    <option v-for="p in classification.pensums" 
-            :key="p.id" 
-            :value="p.id">
-      {{ p.nombre }}
-    </option>
-  </select>
+              <select v-model.number="newArea.pensumId">
+                <option :value="null">Selecciona un pensum</option>
+                <option v-for="p in classification.pensums" :key="p.id" :value="p.id">
+                  {{ p.nombre }}
+                </option>
+              </select>
 
-  <button class="create-btn" type="button" @click="createArea">
-    Agregar
-  </button>
-</div>
+              <button class="create-btn" type="button" @click="createArea">
+                Agregar
+              </button>
+            </div>
           </div>
           <div class="table-shell">
-  <table>
-    <thead>
-      <tr>
-        <th>Nombre</th>
-        <th>Descripción</th>
-        <th>Pensum</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="area in classification.areas" 
-          :key="`area-${area.id}`">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Descripción</th>
+                  <th>Pensum</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="area in classification.areas" :key="`area-${area.id}`">
 
-        <td class="area-name">
-          <span 
-            class="color-bar"
-            :style="{ backgroundColor: area.color || '#ccc' }">
-          </span>
-          {{ area.nombre }}
-        </td>
+                  <td class="area-name">
+                    <span class="color-bar" :style="{ backgroundColor: area.color || '#ccc' }">
+                    </span>
+                    {{ area.nombre }}
+                  </td>
 
-        <td class="muted">
-          {{ area.descripcion || '—' }}
-        </td>
+                  <td class="muted">
+                    {{ area.descripcion || '—' }}
+                  </td>
 
-        <td>
-          {{ area.pensumNombre || '—' }}
-        </td>
+                  <td>
+                    {{ area.pensumNombre || '—' }}
+                  </td>
 
-        <td>
-          <button 
-            class="icon-btn danger" 
-            type="button" 
-            @click="deleteArea(area.id)">
-            ✕
-          </button>
-        </td>
+                  <td>
+                    <button class="icon-btn danger" type="button" @click="deleteArea(area.id)">
+                      ✕
+                    </button>
+                  </td>
 
-      </tr>
-    </tbody>
-  </table>
-</div>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </article>
 
         <article class="panel">
@@ -292,87 +289,83 @@
         </article>
 
         <article class="panel">
-  <div class="block-header">
-    <h3>Carreras</h3>
-    <div class="inline-form">
-      <input v-model.trim="newCarrera.nombre" placeholder="Ingeniería en Sistemas" />
-      <label class="color-field">
-        <span>Color</span>
-        <input v-model.trim="newCarrera.color" type="color" />
-      </label>
-      <input v-model.trim="newCarrera.color" placeholder="#22c55e" class="color-code" />
-      <button class="create-btn" type="button" @click="createCarrera">Agregar</button>
-    </div>
-  </div>
+          <div class="block-header">
+            <h3>Carreras</h3>
+            <div class="inline-form">
+              <input v-model.trim="newCarrera.nombre" placeholder="Ingeniería en Sistemas" />
+              <label class="color-field">
+                <span>Color</span>
+                <input v-model.trim="newCarrera.color" type="color" />
+              </label>
+              <input v-model.trim="newCarrera.color" placeholder="#22c55e" class="color-code" />
+              <button class="create-btn" type="button" @click="createCarrera">Agregar</button>
+            </div>
+          </div>
 
- <div class="table-shell">
-  <table>
-    <thead>
-      <tr>
-        <th>Nombre</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="carrera in classification.carreras" 
-          :key="`carrera-${carrera.id}`"
-          class="carrera-row">
+          <div class="table-shell">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="carrera in classification.carreras" :key="`carrera-${carrera.id}`" class="carrera-row">
 
-        <td class="carrera-name">
-          <span 
-            class="color-bar"
-            :style="{ backgroundColor: carrera.color || '#ccc' }">
-          </span>
-          {{ carrera.nombre }}
-        </td>
+                  <td class="carrera-name">
+                    <span class="color-bar" :style="{ backgroundColor: carrera.color || '#ccc' }">
+                    </span>
+                    {{ carrera.nombre }}
+                  </td>
 
-        <td>
-          <button 
-            class="icon-btn danger" 
-            type="button" 
-            @click="deleteCarrera(carrera.id)">
-            ✕
-          </button>
-        </td>
+                  <td>
+                    <button class="icon-btn danger" type="button" @click="deleteCarrera(carrera.id)">
+                      ✕
+                    </button>
+                  </td>
 
-      </tr>
-    </tbody>
-  </table>
-</div>
-</article>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
         <article class="panel">
           <div class="block-header">
             <h3>Pensum</h3>
             <div class="inline-form">
-  <input v-model.trim="newPensum.nombre" placeholder="Pensum 2026" />
-  <input v-model.trim="newPensum.descripcion" placeholder="Descripción (opcional)" />
+              <input v-model.trim="newPensum.nombre" placeholder="Pensum 2026" />
+              <input v-model.trim="newPensum.descripcion" placeholder="Descripción (opcional)" />
 
-  <select v-model.number="newPensum.carreraId">
-  <option :value="null">Selecciona una carrera</option>
-    <option v-for="c in classification.carreras" 
-            :key="c.id" 
-            :value="c.id">
-      {{ c.nombre }}
-    </option>
-  </select>
+              <select v-model.number="newPensum.carreraId">
+                <option :value="null">Selecciona una carrera</option>
+                <option v-for="c in classification.carreras" :key="c.id" :value="c.id">
+                  {{ c.nombre }}
+                </option>
+              </select>
 
-  <button class="create-btn" type="button" @click="createPensum">
-    Agregar
-  </button>
-</div>
+              <button class="create-btn" type="button" @click="createPensum">
+                Agregar
+              </button>
+            </div>
           </div>
           <div class="table-shell">
             <table>
-              <thead><tr><th>Nombre</th><th>Descripción</th><th>Vigente</th><th>Acciones</th></tr></thead>
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Descripción</th>
+                  <th>Vigente</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
               <tbody>
                 <tr v-for="pensum in classification.pensums" :key="`pensum-${pensum.id}`">
                   <td class="pensum-name">
-  <span 
-    class="color-bar"
-    :style="{ backgroundColor: pensum.color || '#ccc' }">
-  </span>
-  {{ pensum.nombre }}
-</td>
+                    <span class="color-bar" :style="{ backgroundColor: pensum.color || '#ccc' }">
+                    </span>
+                    {{ pensum.nombre }}
+                  </td>
                   <td class="muted">{{ pensum.descripcion || '—' }}</td>
                   <td>
                     <span class="status-pill" :class="pensum.vigente ? 'active' : 'blocked'">
@@ -400,18 +393,30 @@
               <input v-model.number="newCourse.semestre" type="number" min="1" max="20" placeholder="Semestre" />
               <select v-model.number="newCourse.pensumId">
                 <option :value="null">Pensum</option>
-                <option v-for="pensum in classification.pensums" :key="`p-opt-${pensum.id}`" :value="pensum.id">{{ pensum.nombre }}</option>
+                <option v-for="pensum in classification.pensums" :key="`p-opt-${pensum.id}`" :value="pensum.id">{{
+                  pensum.nombre }}</option>
               </select>
               <select v-model.number="newCourse.areaId">
                 <option :value="null">Área</option>
-                <option v-for="area in classification.areas" :key="`a-opt-${area.id}`" :value="area.id">{{ area.nombre }}</option>
+                <option v-for="area in classification.areas" :key="`a-opt-${area.id}`" :value="area.id">{{ area.nombre
+                  }}
+                </option>
               </select>
               <button class="create-btn" type="button" @click="createCourse">Add Course</button>
             </div>
           </div>
           <div class="table-shell">
             <table>
-              <thead><tr><th>Código</th><th>Nombre</th><th>Área</th><th>Semestre</th><th>Pensum</th><th>Acciones</th></tr></thead>
+              <thead>
+                <tr>
+                  <th>Código</th>
+                  <th>Nombre</th>
+                  <th>Área</th>
+                  <th>Semestre</th>
+                  <th>Pensum</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
               <tbody>
                 <tr v-for="course in classification.courses" :key="`course-${course.id}`">
                   <td>{{ course.codigo }}</td>
@@ -427,7 +432,176 @@
             </table>
           </div>
         </article>
+
+        <!--ayuda Clasificación de sistema-->
+        <button type="button" class="admin-help-trigger" @click="showAdminHelp = true; adminHelpStep = 1"
+          aria-label="Ayuda de Clasificaciones">
+          <svg viewBox="0 0 24 24" class="icon-svg-help">
+            <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" />
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" />
+            <line x1="12" y1="17" x2="12.01" y2="17" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+          </svg>
+          <span>Guía de Clasificación</span>
+        </button>
+
+        <div v-if="showAdminHelp" class="admin-help-backdrop" @click.self="showAdminHelp = false">
+          <div class="admin-help-card">
+            <header class="admin-help-header">
+              <div class="admin-help-header-title">
+                <span class="admin-badge-new">Guía del Administrador</span>
+                <h3>System Classification</h3>
+              </div>
+              <button type="button" class="admin-close-btn" @click="showAdminHelp = false">&times;</button>
+            </header>
+
+            <div class="admin-steps-indicator">
+              <span>Paso {{ adminHelpStep }} de 5</span>
+              <strong class="step-title-highlight">
+                <span v-if="adminHelpStep === 1">1. Tech Areas</span>
+                <span v-else-if="adminHelpStep === 2">2. Stacks & Tags</span>
+                <span v-else-if="adminHelpStep === 3">3. Carreras</span>
+                <span v-else-if="adminHelpStep === 4">4. Pensum</span>
+                <span v-else-if="adminHelpStep === 5">5. Courses (Cursos)</span>
+              </strong>
+            </div>
+
+            <div class="admin-help-body">
+
+              <div v-if="adminHelpStep === 1" class="admin-step-layout">
+                <div class="admin-step-graphics">
+                  <div class="real-mockup-form">
+                    <div class="mockup-form-header">Tech Areas</div>
+                    <div class="mockup-inline-fields">
+                      <div class="mock-input">Nombre del área</div>
+                      <div class="mock-input">Descripción (opcional)</div>
+                      <div class="mock-select">Selecciona un pensum</div>
+                      <button class="mock-btn-add" type="button">Agregar</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="admin-step-desc">
+                  <h4>Tech Areas (Áreas Técnicas)</h4>
+                  <p>Aquí divides los cursos en bloques lógicos. Por ejemplo, el área de <em>Metodología de
+                      Sistemas</em> o
+                    <em>Desarrollo de Software</em>, y la asocias a un Pensum específico.
+                  </p>
+                </div>
+              </div>
+
+              <div v-if="adminHelpStep === 2" class="admin-step-layout">
+                <div class="admin-step-graphics">
+                  <div class="real-mockup-double">
+                    <div class="mock-panel">
+                      <div class="mock-panel-title">Stacks</div>
+                      <div class="mock-chips-wrap">
+                        <span class="mock-chip stack-chip">Vue.js <span class="x">✕</span></span>
+                        <span class="mock-chip stack-chip">Node.js <span class="x">✕</span></span>
+                      </div>
+                    </div>
+                    <div class="mock-panel">
+                      <div class="mock-panel-title">Tags</div>
+                      <div class="mock-chips-wrap">
+                        <span class="mock-chip tag-chip">Ayuda <span class="x">✕</span></span>
+                        <span class="mock-chip tag-chip">Examen <span class="x">✕</span></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="admin-step-desc">
+                  <h4>Stacks y Tags Globales</h4>
+                  <p><strong>Stacks:</strong> Tecnologías que los estudiantes dominan (ej. Vue,
+                    Docker).<br><strong>Tags:</strong> Etiquetas informativas usadas en el Sys-Reddit para clasificar
+                    publicaciones.</p>
+                </div>
+              </div>
+
+              <div v-if="adminHelpStep === 3" class="admin-step-layout">
+                <div class="admin-step-graphics">
+                  <div class="real-mockup-form">
+                    <div class="mockup-form-header">Carreras</div>
+                    <div class="mockup-inline-fields">
+                      <div class="mock-input">Ingeniería en Sistemas</div>
+                      <div class="mock-color-picker">
+                        <span class="color-dot"></span>
+                        <span>Color (#22c55e)</span>
+                      </div>
+                      <button class="mock-btn-add" type="button">Agregar</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="admin-step-desc">
+                  <h4>Carreras Académicas</h4>
+                  <p>Registra las carreras habilitadas. Cada carrera se identifica con un color personalizado que se
+                    dibuja
+                    como una barra distintiva al lado de su nombre en las tablas de la aplicación.</p>
+                </div>
+              </div>
+
+              <div v-if="adminHelpStep === 4" class="admin-step-layout">
+                <div class="admin-step-graphics">
+                  <div class="real-mockup-form">
+                    <div class="mockup-form-header">Pensum</div>
+                    <div class="mockup-inline-fields">
+                      <div class="mock-input">Pensum 2026</div>
+                      <div class="mock-input">Descripción</div>
+                      <div class="mock-select">Selecciona una carrera</div>
+                      <button class="mock-btn-add" type="button">Agregar</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="admin-step-desc">
+                  <h4>Gestión de Pensum</h4>
+                  <p>Asocia tus planes de estudio a una carrera específica. Desde la tabla inferior podrás activar o
+                    desactivar la vigencia del pensum utilizando el botón de refrescar (↻).</p>
+                </div>
+              </div>
+
+              <div v-if="adminHelpStep === 5" class="admin-step-layout">
+                <div class="admin-step-graphics">
+                  <div class="real-mockup-form">
+                    <div class="mockup-form-header">Cursos (Courses)</div>
+                    <div class="mockup-inline-fields">
+                      <div class="mock-grid-inputs">
+                        <div class="mock-input text-center">772</div>
+                        <div class="mock-input">Estructura de Datos</div>
+                        <div class="mock-input text-center">Semestre (5)</div>
+                      </div>
+                      <div class="mockup-inline-fields" style="margin-top: 8px;">
+                        <div class="mock-select">Pensum</div>
+                        <div class="mock-select">Área</div>
+                      </div>
+                      <button class="mock-btn-add full" type="button" style="margin-top: 8px;">Add Course</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="admin-step-desc">
+                  <h4>Asociación de Cursos</h4>
+                  <p>Este es el último eslabón: creas el curso usando su código único, nombre, número de semestre
+                    asignado, y
+                    lo vinculas al Pensum y Área Técnica correspondientes.</p>
+                </div>
+              </div>
+
+            </div>
+
+            <footer class="admin-help-footer">
+              <button type="button" class="secondary" v-if="adminHelpStep > 1" @click="adminHelpStep--">
+                Atrás
+              </button>
+
+              <button type="button" class="primary" v-if="adminHelpStep < 5" @click="adminHelpStep++">
+                Siguiente
+              </button>
+
+              <button type="button" class="primary" v-else @click="showAdminHelp = false">
+                ¡Entendido, pa!
+              </button>
+            </footer>
+          </div>
+        </div>
       </section>
+
 
       <!-- ── SYSREDDIT ──────────────────────────────────────────────────────── -->
       <section v-else-if="activeTab === 'forum'" class="system-layout">
@@ -437,11 +611,15 @@
           <div class="panel-title-row">
             <div class="sysreddit-header">
               <div class="sysreddit-logo">
-                <svg viewBox="0 0 24 24" class="sysreddit-logo-icon"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                <svg viewBox="0 0 24 24" class="sysreddit-logo-icon">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                </svg>
               </div>
               <div>
                 <h2 style="margin:0">Sys-Reddit</h2>
-                <p style="margin:0.2rem 0 0;color:var(--text-muted);font-size:0.88rem">Gestión de categorías y tipos de publicación del foro social.</p>
+                <p style="margin:0.2rem 0 0;color:var(--text-muted);font-size:0.88rem">Gestión de categorías y tipos de
+                  publicación del foro social.</p>
               </div>
             </div>
           </div>
@@ -456,7 +634,13 @@
               <div class="section-badge-row">
                 <h3 style="margin:0">Categorías</h3>
                 <span class="scope-badge scope-shared">
-                  <svg viewBox="0 0 24 24" style="width:10px;height:10px"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="9" cy="7" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M23 21v-2a4 4 0 0 0-3-3.87" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 3.13a4 4 0 0 1 0 7.75" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                  <svg viewBox="0 0 24 24" style="width:10px;height:10px">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" fill="none" stroke="currentColor"
+                      stroke-width="2" />
+                    <circle cx="9" cy="7" r="4" fill="none" stroke="currentColor" stroke-width="2" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" fill="none" stroke="currentColor" stroke-width="2" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" fill="none" stroke="currentColor" stroke-width="2" />
+                  </svg>
                   Foros · Blogs · Artículos
                 </span>
               </div>
@@ -477,20 +661,21 @@
           </div>
 
           <div class="chip-list-wrap" style="margin-top:0.5rem">
-            <span
-              v-for="cat in categoriasForo"
-              :key="`cat-${cat.id}`"
-              class="role-chip forum-chip"
-            >
-              <svg viewBox="0 0 24 24" style="width:11px;height:11px;margin-right:3px"><path d="M4 6h16M4 12h16M4 18h7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <span v-for="cat in categoriasForo" :key="`cat-${cat.id}`" class="role-chip forum-chip">
+              <svg viewBox="0 0 24 24" style="width:11px;height:11px;margin-right:3px">
+                <path d="M4 6h16M4 12h16M4 18h7" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" />
+              </svg>
               {{ cat.nombre }}
               <span class="chip-count" v-if="cat.count !== undefined">({{ cat.count }})</span>
-              <button class="chip-remove" type="button" @click="deleteCategoria(cat.id)" :title="cat.count ? 'Tiene hilos, no se puede eliminar' : 'Eliminar'">✕</button>
+              <button class="chip-remove" type="button" @click="deleteCategoria(cat.id)"
+                :title="cat.count ? 'Tiene hilos, no se puede eliminar' : 'Eliminar'">✕</button>
             </span>
           </div>
 
           <div class="quick-seed" v-if="!categoriasForo.length">
-            <p class="muted" style="font-size:0.82rem;margin:0.75rem 0 0.4rem">Carga rápida de categorías predeterminadas:</p>
+            <p class="muted" style="font-size:0.82rem;margin:0.75rem 0 0.4rem">Carga rápida de categorías
+              predeterminadas:</p>
             <button class="create-btn" type="button" @click="seedCategorias" style="font-size:0.82rem">
               Cargar predeterminadas
             </button>
@@ -504,7 +689,10 @@
               <div class="section-badge-row">
                 <h3 style="margin:0">Tipo de foro</h3>
                 <span class="scope-badge scope-forum">
-                  <svg viewBox="0 0 24 24" style="width:10px;height:10px"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                  <svg viewBox="0 0 24 24" style="width:10px;height:10px">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="none"
+                      stroke="currentColor" stroke-width="2" />
+                  </svg>
                   Solo foros
                 </span>
               </div>
@@ -525,11 +713,7 @@
           </div>
 
           <div class="chip-list-wrap" style="margin-top:0.5rem">
-            <span
-              v-for="tipo in tiposForo"
-              :key="`tipo-${tipo.id}`"
-              class="role-chip tipo-chip"
-            >
+            <span v-for="tipo in tiposForo" :key="`tipo-${tipo.id}`" class="role-chip tipo-chip">
               {{ tipo.nombre }}
               <button class="chip-remove" type="button" @click="deleteTipo(tipo.id)">✕</button>
             </span>
@@ -550,7 +734,10 @@
               <div class="section-badge-row">
                 <h3 style="margin:0">Formato Blog / Artículo</h3>
                 <span class="scope-badge scope-static">
-                  <svg viewBox="0 0 24 24" style="width:10px;height:10px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                  <svg viewBox="0 0 24 24" style="width:10px;height:10px">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="none" stroke="currentColor"
+                      stroke-width="2" />
+                  </svg>
                   Estático · Solo lectura
                 </span>
               </div>
@@ -561,14 +748,24 @@
           </div>
           <div class="static-types-row">
             <div class="static-type-chip">
-              <svg viewBox="0 0 24 24" class="static-type-icon"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              <svg viewBox="0 0 24 24" class="static-type-icon">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" />
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+              </svg>
               <div>
                 <strong>Blog</strong>
                 <p>Tutorial o guía práctica</p>
               </div>
             </div>
             <div class="static-type-chip">
-              <svg viewBox="0 0 24 24" class="static-type-icon"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><polyline points="14 2 14 8 20 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              <svg viewBox="0 0 24 24" class="static-type-icon">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="none" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round" />
+                <polyline points="14 2 14 8 20 8" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" />
+              </svg>
               <div>
                 <strong>Artículo</strong>
                 <p>Investigación o análisis</p>
@@ -577,8 +774,119 @@
           </div>
         </article>
 
+        <!--  Ayuda Sysrredit-->
+
+        <button type="button" class="forum-help-trigger" @click="showForumHelp = true; forumHelpStep = 1" aria-label="Ayuda de Sys-Reddit">
+      <svg viewBox="0 0 24 24" class="icon-svg-help">
+        <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="12" y1="17" x2="12.01" y2="17" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+      <span>Guía de Sys-Reddit</span>
+    </button>
+
+    <div v-if="showForumHelp" class="admin-help-backdrop" @click.self="showForumHelp = false">
+      <div class="admin-help-card">
+        <header class="admin-help-header">
+          <div class="admin-help-header-title">
+            <span class="admin-badge-new">Guía del Administrador</span>
+            <h3>Configuración de Sys-Reddit</h3>
+          </div>
+          <button type="button" class="admin-close-btn" @click="showForumHelp = false">&times;</button>
+        </header>
+
+        <div class="admin-steps-indicator">
+          <span>Paso {{ forumHelpStep }} de 2</span>
+          <strong class="step-title-highlight">
+            <span v-if="forumHelpStep === 1">1. Categorías Globales</span>
+            <span v-else-if="forumHelpStep === 2">2. Tipos de Hilo (Foro)</span>
+          </strong>
+        </div>
+
+        <div class="admin-help-body">
+          
+          <div v-if="forumHelpStep === 1" class="admin-step-layout">
+            <div class="admin-step-graphics">
+              <div class="real-mockup-form">
+                <div class="mockup-form-header">Categorías Compartidas</div>
+                <div class="mockup-inline-fields" style="margin-bottom: 0.8rem;">
+                  <div class="mock-input">Ej: Desarrollo Web</div>
+                  <button class="mock-btn-add" type="button">Agregar</button>
+                </div>
+                <div class="mock-chips-wrap">
+                  <span class="mock-chip forum-cat-chip">
+                    <svg viewBox="0 0 24 24" style="width:10px;height:10px;margin-right:2px"><path d="M4 6h16M4 12h16M4 18h7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                    Programación <span class="x">✕</span>
+                  </span>
+                  <span class="mock-chip forum-cat-chip">
+                    <svg viewBox="0 0 24 24" style="width:10px;height:10px;margin-right:2px"><path d="M4 6h16M4 12h16M4 18h7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                    Electrónica <span class="x">✕</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="admin-step-desc">
+              <h4>Categorías Globales</h4>
+              <p>Estas etiquetas agrupan los contenidos de todo el ecosistema (<strong>Foros, Blogs y Artículos</strong>). Los estudiantes las seleccionan para filtrar y organizar sus publicaciones académicas.</p>
+            </div>
+          </div>
+
+          <div v-if="forumHelpStep === 2" class="admin-step-layout">
+            <div class="admin-step-graphics">
+              <div class="real-mockup-form">
+                <div class="mockup-form-header">Tipos de Foro (Hilos)</div>
+                <div class="mockup-inline-fields" style="margin-bottom: 0.8rem;">
+                  <div class="mock-input">Ej: Pregunta</div>
+                  <button class="mock-btn-add" type="button">Agregar</button>
+                </div>
+                <div class="mock-chips-wrap">
+                  <span class="mock-chip forum-tipo-chip">Pregunta <span class="x">✕</span></span>
+                  <span class="mock-chip forum-tipo-chip">Debate <span class="x">✕</span></span>
+                  <span class="mock-chip forum-tipo-chip">Aporte <span class="x">✕</span></span>
+                </div>
+              </div>
+            </div>
+            <div class="admin-step-desc">
+              <h4>Tipos de Foro (Hilos)</h4>
+              <p>Aplican <strong>únicamente</strong> a los hilos de discusión tradicionales. Permiten clasificar si la publicación de un estudiante es una duda rápida, un debate abierto o material de estudio.</p>
+            </div>
+          </div>
+
+        </div>
+
+        <footer class="admin-help-footer">
+          <button 
+            type="button" 
+            class="secondary" 
+            v-if="forumHelpStep > 1" 
+            @click="forumHelpStep--"
+          >
+            Atrás
+          </button>
+          
+          <button 
+            type="button" 
+            class="primary" 
+            v-if="forumHelpStep < 2" 
+            @click="forumHelpStep++"
+          >
+            Siguiente
+          </button>
+          
+          <button 
+            type="button" 
+            class="primary" 
+            v-else 
+            @click="showForumHelp = false"
+          >
+            ¡Entendido, pa!
+          </button>
+        </footer>
+      </div>
+    </div>
       </section>
 
+      <!-- ── CURADURÍA AUXILIAR ─────────────────────────────────────────── -->
       <section v-else-if="activeTab === 'curadoria'" class="system-layout">
 
         <!-- Header -->
@@ -587,16 +895,23 @@
             <div class="sysreddit-header">
               <div class="sysreddit-logo">
                 <svg viewBox="0 0 24 24" class="sysreddit-logo-icon">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                  <polyline points="14 2 14 8 20 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                  <line x1="16" y1="13" x2="8" y2="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                  <line x1="16" y1="17" x2="8" y2="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                  <line x1="10" y1="9" x2="8" y2="9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" />
+                  <polyline points="14 2 14 8 20 8" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" />
+                  <line x1="16" y1="13" x2="8" y2="13" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" />
+                  <line x1="16" y1="17" x2="8" y2="17" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" />
+                  <line x1="10" y1="9" x2="8" y2="9" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" />
                 </svg>
               </div>
               <div>
                 <h2 style="margin:0">Curaduría Auxiliar</h2>
-                <p style="margin:0.2rem 0 0;color:var(--text-muted);font-size:0.88rem">Tipos de recursos disponibles para auxiliares (PDFs, Videos, Repositorios, etc.)</p>
+                <p style="margin:0.2rem 0 0;color:var(--text-muted);font-size:0.88rem">Tipos de recursos disponibles
+                  para
+                  auxiliares (PDFs, Videos, Repositorios, etc.)</p>
               </div>
             </div>
           </div>
@@ -622,11 +937,7 @@
           <div class="curaduria-form-grid">
             <div class="form-field">
               <label class="field-label">Nombre del recurso <span class="field-required">*</span></label>
-              <input
-                v-model.trim="newTipoRecurso.nombre_recurso"
-                placeholder="Ej: Documento PDF"
-                class="field-input"
-              />
+              <input v-model.trim="newTipoRecurso.nombre_recurso" placeholder="Ej: Documento PDF" class="field-input" />
             </div>
             <div class="form-field">
               <label class="field-label">
@@ -635,39 +946,32 @@
               </label>
               <div class="field-slug-preview">
                 <svg viewBox="0 0 24 24" style="width:13px;height:13px;flex-shrink:0;color:var(--text-muted)">
-                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                 </svg>
                 <code>{{ newTipoRecurso.slug || 'se-genera-al-escribir' }}</code>
               </div>
             </div>
             <div class="form-field form-field--full">
               <label class="field-label">Descripción</label>
-              <input
-                v-model.trim="newTipoRecurso.descripcion"
-                placeholder="Ej: PDFs, presentaciones y guías de estudio"
-                class="field-input"
-              />
+              <input v-model.trim="newTipoRecurso.descripcion" placeholder="Ej: PDFs, presentaciones y guías de estudio"
+                class="field-input" />
             </div>
           </div>
 
           <!-- Icon picker -->
           <div class="icon-picker-section">
-            
+
 
             <!-- Search results -->
             <template v-if="iconResults.length">
               <div class="catalog-section" style="margin-bottom:0.5rem">
                 <h4>Resultados de búsqueda ({{ iconResults.length }})</h4>
                 <div class="icon-grid">
-                  <button
-                    v-for="iconId in iconResults"
-                    :key="`sr-${iconId}`"
-                    type="button"
-                    class="icon-selector-btn"
-                    :class="{ active: newTipoRecurso.icono_svg === iconId }"
-                    @click="selectIcon(iconId)"
-                  >
+                  <button v-for="iconId in iconResults" :key="`sr-${iconId}`" type="button" class="icon-selector-btn"
+                    :class="{ active: newTipoRecurso.icono_svg === iconId }" @click="selectIcon(iconId)">
                     <img :src="`https://api.iconify.design/${iconId}.svg`" style="width:22px;height:22px" />
                     <span>{{ iconId.split(':')[1] }}</span>
                   </button>
@@ -683,14 +987,8 @@
               <div v-for="(icons, category) in iconLibrary" :key="category" class="catalog-section">
                 <h4>{{ category }}</h4>
                 <div class="icon-grid">
-                  <button
-                    v-for="icon in icons"
-                    :key="icon.id"
-                    type="button"
-                    class="icon-selector-btn"
-                    :class="{ active: newTipoRecurso.icono_svg === icon.id }"
-                    @click="selectIcon(icon.id)"
-                  >
+                  <button v-for="icon in icons" :key="icon.id" type="button" class="icon-selector-btn"
+                    :class="{ active: newTipoRecurso.icono_svg === icon.id }" @click="selectIcon(icon.id)">
                     <img :src="`https://api.iconify.design/${icon.id}.svg`" style="width:22px;height:22px" />
                     <span>{{ icon.label }}</span>
                   </button>
@@ -701,14 +999,10 @@
 
           <!-- Submit -->
           <div style="margin-top:1rem;display:flex;gap:0.6rem;align-items:center;flex-wrap:wrap">
-            <button
-              class="create-btn"
-              type="button"
-              @click="createTipoRecurso"
-              :disabled="!canSaveTipoRecurso || isSavingRecurso"
-            >
+            <button class="create-btn" type="button" @click="createTipoRecurso"
+              :disabled="!canSaveTipoRecurso || isSavingRecurso">
               <svg viewBox="0 0 24 24" class="btn-icon" aria-hidden="true">
-                <path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
               </svg>
               {{ isSavingRecurso ? 'Guardando...' : 'Guardar Tipo de Recurso' }}
             </button>
@@ -719,7 +1013,9 @@
         <article class="panel">
           <div class="block-header">
             <h3>Tipos Registrados</h3>
-            <span class="muted" style="font-size:0.82rem">{{ tiposRecursos.length }} tipo{{ tiposRecursos.length !== 1 ? 's' : '' }}</span>
+            <span class="muted" style="font-size:0.82rem">{{ tiposRecursos.length }} tipo{{ tiposRecursos.length !== 1 ?
+              's' :
+              '' }}</span>
           </div>
 
           <div v-if="!tiposRecursos.length && !isCuraduriaLoading" class="empty-state">
@@ -740,13 +1036,12 @@
                 <tr v-for="tipo in tiposRecursos" :key="tipo.id_tipo_recurso">
                   <td style="width:56px">
                     <div class="tipo-icon-cell">
-                      <img
-                        v-if="tipo.icono_svg"
+                      <img v-if="tipo.icono_svg"
                         :src="`https://api.iconify.design/${tipo.icono_svg}.svg?color=%23f97316`"
-                        style="width:22px;height:22px"
-                      />
+                        style="width:22px;height:22px" />
                       <svg v-else viewBox="0 0 24 24" style="width:22px;height:22px;color:var(--text-muted)">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="none"
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                       </svg>
                     </div>
                   </td>
@@ -756,8 +1051,12 @@
                   </td>
                   <td class="muted">{{ tipo.descripcion || '—' }}</td>
                   <td>
-                    <button class="icon-btn danger" type="button" @click="deleteTipoRecurso(tipo.id_tipo_recurso)" title="Eliminar tipo">
-                      <svg viewBox="0 0 24 24" class="mini-icon"><path d="M18 6 6 18M6 6l12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                    <button class="icon-btn danger" type="button" @click="deleteTipoRecurso(tipo.id_tipo_recurso)"
+                      title="Eliminar tipo">
+                      <svg viewBox="0 0 24 24" class="mini-icon">
+                        <path d="M18 6 6 18M6 6l12 12" fill="none" stroke="currentColor" stroke-width="2"
+                          stroke-linecap="round" />
+                      </svg>
                     </button>
                   </td>
                 </tr>
@@ -766,12 +1065,137 @@
           </div>
         </article>
 
+      <button type="button" class="curaduria-help-trigger" @click="showCuraduriaHelp = true; curaduriaHelpStep = 1" aria-label="Ayuda de Curaduría">
+      <svg viewBox="0 0 24 24" class="icon-svg-help">
+        <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="12" y1="17" x2="12.01" y2="17" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+      <span>Guía de Recursos</span>
+    </button>
+
+    <div v-if="showCuraduriaHelp" class="admin-help-backdrop" @click.self="showCuraduriaHelp = false">
+      <div class="admin-help-card">
+        <header class="admin-help-header">
+          <div class="admin-help-header-title">
+            <span class="admin-badge-new">Curaduría de Recursos</span>
+            <h3>Gestión de Formatos</h3>
+          </div>
+          <button type="button" class="admin-close-btn" @click="showCuraduriaHelp = false">&times;</button>
+        </header>
+
+        <div class="admin-steps-indicator">
+          <span>Paso {{ curaduriaHelpStep }} de 2</span>
+          <strong class="step-title-highlight">
+            <span v-if="curaduriaHelpStep === 1">1. Crear Tipo y Seleccionar Icono</span>
+            <span v-else-if="curaduriaHelpStep === 2">2. Listado de Formatos</span>
+          </strong>
+        </div>
+
+        <div class="admin-help-body">
+          
+          <div v-if="curaduriaHelpStep === 1" class="admin-step-layout">
+            <div class="admin-step-graphics">
+              <div class="curaduria-mockup-split">
+                <div class="real-mockup-form">
+                  <div class="mockup-form-header">Nuevo Recurso</div>
+                  <div class="mock-input">Ej: Documento PDF</div>
+                  <div class="mock-selected-icon-preview">
+                    <span>Icono:</span>
+                    <div class="preview-box-green">
+                      <svg viewBox="0 0 24 24" class="svg-inline-green"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" fill="currentColor"/></svg>
+                    </div>
+                  </div>
+                  <button class="mock-btn-add full" type="button">Agregar Recurso</button>
+                </div>
+                <div class="curaduria-mockup-icons">
+                  <span class="icons-label">Catálogo Iconify</span>
+                  <div class="icons-tiny-grid">
+                    <div class="tiny-icon">
+                      <svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z" fill="currentColor"/></svg>
+                    </div>
+                    <div class="tiny-icon active">
+                      <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" fill="currentColor"/></svg>
+                    </div>
+                    <div class="tiny-icon">
+                      <svg viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z" fill="currentColor"/></svg>
+                    </div>
+                    <div class="tiny-icon">
+                      <svg viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0 1.1-.9-2-2-2h-8l-2-2z" fill="currentColor"/></svg>
+                    </div>
+                    <div class="tiny-icon">
+                      <svg viewBox="0 0 24 24"><path d="M20 13H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h16c.55 0 1-.45 1-1v-6c0-.55-.45-1-1-1zM7 19c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM20 3H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h16c.55 0 1-.45 1-1V4c0-.55-.45-1-1-1zM7 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" fill="currentColor"/></svg>
+                    </div>
+                    <div class="tiny-icon">
+                      <svg viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z" fill="currentColor"/></svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="admin-step-desc">
+              <h4>Crear Tipos de Recurso</h4>
+              <p>Escribe el nombre del formato y selecciona un icono SVG representativo de la paleta. Este icono identificará visualmente los archivos que suban los auxiliares.</p>
+            </div>
+          </div>
+
+          <div v-if="curaduriaHelpStep === 2" class="admin-step-layout">
+            <div class="admin-step-graphics">
+              <div class="curaduria-mockup-table">
+                <div class="curaduria-table-header">
+                  <span>Icono</span>
+                  <span>Nombre del Formato</span>
+                  <span>Acción</span>
+                </div>
+                <div class="curaduria-table-row">
+                  <div class="table-icon-green-box">
+                    <svg viewBox="0 0 24 24" class="svg-table-green"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" fill="currentColor"/></svg>
+                  </div>
+                  <span class="resource-name">Documento de Lectura</span>
+                  <button class="mock-btn-delete" type="button">Eliminar</button>
+                </div>
+                <div class="curaduria-table-row">
+                  <div class="table-icon-green-box">
+                    <svg viewBox="0 0 24 24" class="svg-table-green"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z" fill="currentColor"/></svg>
+                  </div>
+                  <span class="resource-name">Video Tutorial</span>
+                  <button class="mock-btn-delete" type="button">Eliminar</button>
+                </div>
+              </div>
+            </div>
+            <div class="admin-step-desc">
+              <h4>Lista de Formatos Activos</h4>
+              <p>En la tabla derecha verás todos los recursos registrados en la plataforma con su respectivo icono asignado en color verde. Si un formato ya no es necesario, puedes dar clic en <strong>Eliminar</strong>.</p>
+            </div>
+          </div>
+
+        </div>
+
+        <footer class="admin-help-footer">
+          <button type="button" class="secondary" v-if="curaduriaHelpStep > 1" @click="curaduriaHelpStep--">
+            Atrás
+          </button>
+          
+          <button type="button" class="primary" v-if="curaduriaHelpStep < 2" @click="curaduriaHelpStep++">
+            Siguiente
+          </button>
+          
+          <button type="button" class="primary" v-else @click="showCuraduriaHelp = false">
+            ¡Entendido, pa!
+          </button>
+        </footer>
+      </div>
+    </div>
       </section>
       <!-- ── MODERATION ─────────────────────────────────────────────────────── -->
       <section v-else class="panel placeholder-panel">
         <h2>Global Moderation</h2>
         <p>Este módulo se habilita después de integrar reportes reales.</p>
       </section>
+
+
+      <!-- ── ADMIN HELP ─────────────────────────────────────────────────────── -->
+
     </main>
   </div>
 </template>
@@ -813,6 +1237,12 @@ const newCourse = ref({ codigo: '', nombre: '', semestre: 1, pensumId: null, are
 const newStack = ref('')
 const newTag = ref('')
 
+
+// --- Control del Manual de System Classifications ---
+const showAdminHelp = ref(false)
+const adminHelpStep = ref(1) // Paso 1, 2 o 3
+
+
 // ── Forum config ──────────────────────────────────────────────────────────────
 const categoriasForo = ref([])
 const tiposForo = ref([])
@@ -821,6 +1251,13 @@ const forumError = ref('')
 const newCategoria = ref('')
 const newTipo = ref('')
 
+// --- Control del Manual de Sys-Reddit (Categorías y Tipos) ---
+const showForumHelp = ref(false)
+const forumHelpStep = ref(1)
+
+// --- Control del Manual de Curaduría de Recursos ---
+const showCuraduriaHelp = ref(false)
+const curaduriaHelpStep = ref(1) // Paso 1 (Crear Tipo e Icono), Paso 2 (Tabla de Recursos)
 // ── Computed ──────────────────────────────────────────────────────────────────
 const canAccessStudentMode = computed(() => hasRole('comun'))
 
@@ -918,7 +1355,7 @@ const createTipoRecurso = async () => {
 
 // 4. Función para eliminar
 const deleteTipoRecurso = async (id) => {
-  if(!confirm("¿Eliminar este tipo?")) return
+  if (!confirm("¿Eliminar este tipo?")) return
   await callAdminApi(`/recursos/tipos/${id}`, { method: 'DELETE' })
   await loadCuradoria()
 }
@@ -1328,7 +1765,7 @@ const searchIcons = async () => {
     // 2. Buscamos el icono con la palabra ya traducida
     const res = await fetch(`https://api.iconify.design/search?query=${translatedQuery}&prefixes=lucide&limit=30`);
     const data = await res.json();
-    
+
     iconResults.value = data.icons || [];
   } catch (e) {
     // Si la traducción falla, intentamos con el texto original como plan B
@@ -1346,98 +1783,423 @@ const selectIcon = (iconName) => {
 </script>
 
 <style scoped>
-.admin-page { min-height: 100vh; background: var(--bg-app); color: var(--text-primary); }
+.admin-page {
+  min-height: 100vh;
+  background: var(--bg-app);
+  color: var(--text-primary);
+}
 
 .admin-header {
-  position: sticky; top: 0; z-index: 25;
-  display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 25;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
   padding: 1rem 1.4rem;
   border-bottom: 1px solid var(--border-color);
   background: color-mix(in srgb, var(--bg-surface) 92%, transparent);
   backdrop-filter: blur(7px);
 }
 
-.brand-block { display: flex; align-items: center; gap: 0.8rem; }
-.brand-icon { width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(135deg, #ef4444, #f97316); display: grid; place-items: center; color: #fff; }
-.icon-svg { width: 20px; height: 20px; }
-.brand-block h1 { margin: 0; font-size: 1.28rem; }
-.brand-block p { margin: 0; color: var(--text-muted); font-size: 0.8rem; }
-.admin-header-actions { display: flex; align-items: center; gap: 0.8rem; }
+.brand-block {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
 
-.mode-switch-btn { border: 1px solid var(--border-color); background: var(--bg-muted); color: var(--text-soft); border-radius: 999px; padding: 0.3rem 0.7rem; font-size: 0.78rem; cursor: pointer; }
-.mode-switch-btn:hover { border-color: var(--accent-500); color: var(--accent-500); }
+.brand-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ef4444, #f97316);
+  display: grid;
+  place-items: center;
+  color: #fff;
+}
 
-.admin-badge { border: 1px solid color-mix(in srgb, var(--error) 40%, transparent); background: color-mix(in srgb, var(--error) 20%, transparent); color: #fb7185; border-radius: 999px; padding: 0.25rem 0.7rem; font-size: 0.75rem; font-weight: 700; }
+.icon-svg {
+  width: 20px;
+  height: 20px;
+}
 
-.avatar { border: none; width: 34px; height: 34px; border-radius: 50%; color: #fff; font-weight: 700; cursor: pointer; background: linear-gradient(135deg, #ef4444, #f97316); }
+.brand-block h1 {
+  margin: 0;
+  font-size: 1.28rem;
+}
 
-.admin-content { max-width: 1200px; margin: 0 auto; padding: 1.2rem; display: grid; gap: 1rem; }
+.brand-block p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
 
-.tab-row { display: flex; gap: 0.6rem; flex-wrap: wrap; border-bottom: 1px solid var(--border-color); padding-bottom: 0.4rem; }
+.admin-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
 
-.tab-btn { border: none; cursor: pointer; background: transparent; color: var(--text-muted); padding: 0.55rem 0.35rem; font-weight: 600; position: relative; display: inline-flex; align-items: center; gap: 0.35rem; }
-.tab-btn.active { color: var(--text-primary); }
-.tab-btn.active::after { content: ''; position: absolute; left: 0; right: 0; bottom: -0.41rem; height: 2px; background: linear-gradient(135deg, #ef4444, #f97316); }
+.mode-switch-btn {
+  border: 1px solid var(--border-color);
+  background: var(--bg-muted);
+  color: var(--text-soft);
+  border-radius: 999px;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
 
-.pending-pill { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; border-radius: 999px; font-size: 0.7rem; font-weight: 700; background: color-mix(in srgb, #ef4444 20%, transparent); color: #fb7185; }
+.mode-switch-btn:hover {
+  border-color: var(--accent-500);
+  color: var(--accent-500);
+}
 
-.panel { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 16px; padding: 1rem; }
+.admin-badge {
+  border: 1px solid color-mix(in srgb, var(--error) 40%, transparent);
+  background: color-mix(in srgb, var(--error) 20%, transparent);
+  color: #fb7185;
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
 
-.panel-title-row { display: flex; justify-content: space-between; gap: 1rem; align-items: center; flex-wrap: wrap; }
-.panel-title-row h2 { margin: 0; }
-.panel-title-row p { margin: 0.2rem 0 0; color: var(--text-muted); font-size: 0.9rem; }
+.avatar {
+  border: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  background: linear-gradient(135deg, #ef4444, #f97316);
+}
 
-.create-btn { border: none; border-radius: 10px; color: #fff; background: linear-gradient(135deg, #ef4444, #f97316); padding: 0.55rem 0.8rem; display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 600; cursor: pointer; }
-.create-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.admin-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.2rem;
+  display: grid;
+  gap: 1rem;
+}
 
-.btn-icon { width: 16px; height: 16px; }
+.tab-row {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.4rem;
+}
 
-.search-box { margin-top: 0.8rem; position: relative; display: block; }
-.search-box input { width: 100%; background: var(--bg-muted); border: 1px solid var(--border-color); color: inherit; border-radius: 12px; padding: 0.65rem 0.8rem 0.65rem 2.1rem; }
-.search-icon { width: 16px; height: 16px; position: absolute; left: 0.7rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+.tab-btn {
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text-muted);
+  padding: 0.55rem 0.35rem;
+  font-weight: 600;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
 
-.state { margin: 0.8rem 0 0; color: var(--text-muted); }
-.state.error { color: var(--error); }
+.tab-btn.active {
+  color: var(--text-primary);
+}
 
-.table-shell { margin-top: 0.8rem; border: 1px solid var(--border-color); border-radius: 12px; overflow: auto; }
-table { width: 100%; border-collapse: collapse; min-width: 780px; }
-th, td { text-align: left; padding: 0.8rem; border-bottom: 1px solid var(--border-color); }
-th { background: color-mix(in srgb, var(--bg-muted) 75%, transparent); font-size: 0.82rem; color: var(--text-soft); }
-.muted { color: var(--text-muted); font-size: 0.82rem; }
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.41rem;
+  height: 2px;
+  background: linear-gradient(135deg, #ef4444, #f97316);
+}
 
-.roles-wrap { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.pending-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: color-mix(in srgb, #ef4444 20%, transparent);
+  color: #fb7185;
+}
 
-.role-chip { border-radius: 999px; font-size: 0.72rem; padding: 0.18rem 0.55rem; border: 1px solid transparent; display: inline-flex; align-items: center; gap: 0.25rem; }
-.role-chip.student { border-color: color-mix(in srgb, #3b82f6 35%, transparent); background: color-mix(in srgb, #3b82f6 16%, transparent); color: #60a5fa; }
-.role-chip.admin { border-color: color-mix(in srgb, #ec4899 35%, transparent); background: color-mix(in srgb, #ec4899 16%, transparent); color: #f472b6; }
-.role-chip.forum-chip { border-color: color-mix(in srgb, var(--accent-500) 35%, transparent); background: color-mix(in srgb, var(--accent-500) 12%, transparent); color: var(--accent-500); font-size: 0.8rem; padding: 0.3rem 0.7rem; }
-.role-chip.tipo-chip { border-color: color-mix(in srgb, #f59e0b 35%, transparent); background: color-mix(in srgb, #f59e0b 12%, transparent); color: #fbbf24; font-size: 0.8rem; padding: 0.3rem 0.7rem; }
+.panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 1rem;
+}
 
-.chip-count { font-size: 0.7rem; opacity: 0.7; }
+.panel-title-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
 
-.status-pill { border-radius: 999px; font-size: 0.72rem; padding: 0.18rem 0.55rem; border: 1px solid transparent; }
-.status-pill.active { border-color: color-mix(in srgb, #22c55e 35%, transparent); background: color-mix(in srgb, #22c55e 16%, transparent); color: #4ade80; }
-.status-pill.blocked { border-color: color-mix(in srgb, #ef4444 35%, transparent); background: color-mix(in srgb, #ef4444 16%, transparent); color: #f87171; }
+.panel-title-row h2 {
+  margin: 0;
+}
 
-.actions-wrap { display: flex; gap: 0.35rem; }
-.icon-btn { border: 1px solid var(--border-color); border-radius: 8px; width: 32px; height: 32px; display: grid; place-items: center; background: var(--bg-muted); color: var(--text-soft); cursor: pointer; }
-.icon-btn:disabled { opacity: 0.55; cursor: not-allowed; }
-.icon-btn.danger { color: #f87171; }
-.mini-icon { width: 14px; height: 14px; }
+.panel-title-row p {
+  margin: 0.2rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
 
-.empty-state { margin: 0; padding: 1rem; color: var(--text-muted); border: 1px dashed var(--border-color); border-radius: 10px; text-align: center; font-size: 0.88rem; }
+.create-btn {
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  background: linear-gradient(135deg, #ef4444, #f97316);
+  padding: 0.55rem 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+}
 
-.placeholder-panel h2 { margin-top: 0; }
-.placeholder-panel p { color: var(--text-soft); }
+.create-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
-.system-layout { display: grid; gap: 0.9rem; }
+.btn-icon {
+  width: 16px;
+  height: 16px;
+}
 
-.block-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 0.7rem; }
-.block-header h3 { margin: 0; }
+.search-box {
+  margin-top: 0.8rem;
+  position: relative;
+  display: block;
+}
 
-.inline-form { display: inline-flex; gap: 0.45rem; flex-wrap: wrap; }
-.inline-form input, .inline-form select { border: 1px solid var(--border-color); background: var(--bg-muted); border-radius: 8px; color: inherit; padding: 0.45rem 0.6rem; }
-.inline-form.large input, .inline-form.large select { min-width: 120px; }
+.search-box input {
+  width: 100%;
+  background: var(--bg-muted);
+  border: 1px solid var(--border-color);
+  color: inherit;
+  border-radius: 12px;
+  padding: 0.65rem 0.8rem 0.65rem 2.1rem;
+}
+
+.search-icon {
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  left: 0.7rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+}
+
+.state {
+  margin: 0.8rem 0 0;
+  color: var(--text-muted);
+}
+
+.state.error {
+  color: var(--error);
+}
+
+.table-shell {
+  margin-top: 0.8rem;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 780px;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 0.8rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+th {
+  background: color-mix(in srgb, var(--bg-muted) 75%, transparent);
+  font-size: 0.82rem;
+  color: var(--text-soft);
+}
+
+.muted {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.roles-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.role-chip {
+  border-radius: 999px;
+  font-size: 0.72rem;
+  padding: 0.18rem 0.55rem;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.role-chip.student {
+  border-color: color-mix(in srgb, #3b82f6 35%, transparent);
+  background: color-mix(in srgb, #3b82f6 16%, transparent);
+  color: #60a5fa;
+}
+
+.role-chip.admin {
+  border-color: color-mix(in srgb, #ec4899 35%, transparent);
+  background: color-mix(in srgb, #ec4899 16%, transparent);
+  color: #f472b6;
+}
+
+.role-chip.forum-chip {
+  border-color: color-mix(in srgb, var(--accent-500) 35%, transparent);
+  background: color-mix(in srgb, var(--accent-500) 12%, transparent);
+  color: var(--accent-500);
+  font-size: 0.8rem;
+  padding: 0.3rem 0.7rem;
+}
+
+.role-chip.tipo-chip {
+  border-color: color-mix(in srgb, #f59e0b 35%, transparent);
+  background: color-mix(in srgb, #f59e0b 12%, transparent);
+  color: #fbbf24;
+  font-size: 0.8rem;
+  padding: 0.3rem 0.7rem;
+}
+
+.chip-count {
+  font-size: 0.7rem;
+  opacity: 0.7;
+}
+
+.status-pill {
+  border-radius: 999px;
+  font-size: 0.72rem;
+  padding: 0.18rem 0.55rem;
+  border: 1px solid transparent;
+}
+
+.status-pill.active {
+  border-color: color-mix(in srgb, #22c55e 35%, transparent);
+  background: color-mix(in srgb, #22c55e 16%, transparent);
+  color: #4ade80;
+}
+
+.status-pill.blocked {
+  border-color: color-mix(in srgb, #ef4444 35%, transparent);
+  background: color-mix(in srgb, #ef4444 16%, transparent);
+  color: #f87171;
+}
+
+.actions-wrap {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.icon-btn {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  background: var(--bg-muted);
+  color: var(--text-soft);
+  cursor: pointer;
+}
+
+.icon-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.icon-btn.danger {
+  color: #f87171;
+}
+
+.mini-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.empty-state {
+  margin: 0;
+  padding: 1rem;
+  color: var(--text-muted);
+  border: 1px dashed var(--border-color);
+  border-radius: 10px;
+  text-align: center;
+  font-size: 0.88rem;
+}
+
+.placeholder-panel h2 {
+  margin-top: 0;
+}
+
+.placeholder-panel p {
+  color: var(--text-soft);
+}
+
+.system-layout {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.block-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.7rem;
+}
+
+.block-header h3 {
+  margin: 0;
+}
+
+.inline-form {
+  display: inline-flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.inline-form input,
+.inline-form select {
+  border: 1px solid var(--border-color);
+  background: var(--bg-muted);
+  border-radius: 8px;
+  color: inherit;
+  padding: 0.45rem 0.6rem;
+}
+
+.inline-form.large input,
+.inline-form.large select {
+  min-width: 120px;
+}
 
 .color-field {
   display: inline-flex;
@@ -1464,12 +2226,37 @@ th { background: color-mix(in srgb, var(--bg-muted) 75%, transparent); font-size
   min-width: 96px;
 }
 
-.chip-list-wrap { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-.chip-list-wrap.compact { max-height: 170px; overflow: auto; padding-right: 0.2rem; }
-.chip-remove { border: none; background: transparent; color: inherit; cursor: pointer; margin-left: 0.35rem; font-size: 0.78rem; opacity: 0.7; }
-.chip-remove:hover { opacity: 1; }
+.chip-list-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
 
-.double-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
+.chip-list-wrap.compact {
+  max-height: 170px;
+  overflow: auto;
+  padding-right: 0.2rem;
+}
+
+.chip-remove {
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  margin-left: 0.35rem;
+  font-size: 0.78rem;
+  opacity: 0.7;
+}
+
+.chip-remove:hover {
+  opacity: 1;
+}
+
+.double-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
 
 /* ── Curaduría: Nuevo Tipo de Recurso ─────────────────────────────────────── */
 .curaduria-form-grid {
@@ -1479,8 +2266,15 @@ th { background: color-mix(in srgb, var(--bg-muted) 75%, transparent); font-size
   margin-top: 0.6rem;
 }
 
-.form-field { display: flex; flex-direction: column; gap: 0.45rem; }
-.form-field--full { grid-column: 1 / -1; }
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.form-field--full {
+  grid-column: 1 / -1;
+}
 
 .field-label {
   font-size: 0.8rem;
@@ -1491,7 +2285,10 @@ th { background: color-mix(in srgb, var(--bg-muted) 75%, transparent); font-size
   gap: 0.4rem;
 }
 
-.field-required { color: #fb7185; font-weight: 700; }
+.field-required {
+  color: #fb7185;
+  font-weight: 700;
+}
 
 .field-input {
   width: 100%;
@@ -1560,7 +2357,9 @@ th { background: color-mix(in srgb, var(--bg-muted) 75%, transparent); font-size
   color: inherit;
 }
 
-.icon-search-box input:focus { outline: none; }
+.icon-search-box input:focus {
+  outline: none;
+}
 
 .icon-search-run {
   border: none;
@@ -1572,12 +2371,20 @@ th { background: color-mix(in srgb, var(--bg-muted) 75%, transparent); font-size
   cursor: pointer;
 }
 
-.icon-search-run:disabled { opacity: 0.6; cursor: not-allowed; }
+.icon-search-run:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 
 /* ── Rango toggles ─────────────────────────────────────────────────────────── */
-tr.row-editing { background: color-mix(in srgb, var(--accent-500) 4%, transparent); }
+tr.row-editing {
+  background: color-mix(in srgb, var(--accent-500) 4%, transparent);
+}
 
-.rango-toggles { display: grid; gap: 0.5rem; }
+.rango-toggles {
+  display: grid;
+  gap: 0.5rem;
+}
 
 .rango-toggle {
   display: flex;
@@ -1587,7 +2394,9 @@ tr.row-editing { background: color-mix(in srgb, var(--accent-500) 4%, transparen
   user-select: none;
 }
 
-.rango-toggle input { display: none; }
+.rango-toggle input {
+  display: none;
+}
 
 .toggle-track {
   width: 34px;
@@ -1622,22 +2431,55 @@ tr.row-editing { background: color-mix(in srgb, var(--accent-500) 4%, transparen
   background: var(--accent-500);
 }
 
-.toggle-label { font-size: 0.78rem; font-weight: 600; color: var(--text-soft); }
-.toggle-label.aux { color: #facc15; }
-.toggle-label.mod { color: #a78bfa; }
-.toggle-label.admin-lbl { color: #f472b6; }
+.toggle-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-soft);
+}
+
+.toggle-label.aux {
+  color: #facc15;
+}
+
+.toggle-label.mod {
+  color: #a78bfa;
+}
+
+.toggle-label.admin-lbl {
+  color: #f472b6;
+}
 
 /* New role chips */
-.role-chip.aux { border-color: rgba(250,204,21,0.35); background: rgba(250,204,21,0.12); color: #facc15; }
-.role-chip.mod { border-color: rgba(167,139,250,0.35); background: rgba(167,139,250,0.12); color: #a78bfa; }
+.role-chip.aux {
+  border-color: rgba(250, 204, 21, 0.35);
+  background: rgba(250, 204, 21, 0.12);
+  color: #facc15;
+}
 
-.icon-btn.success { color: #4ade80; }
-.icon-btn.success:hover { background: color-mix(in srgb, #22c55e 12%, transparent); }
+.role-chip.mod {
+  border-color: rgba(167, 139, 250, 0.35);
+  background: rgba(167, 139, 250, 0.12);
+  color: #a78bfa;
+}
 
-.quick-seed { margin-top: 0.5rem; }
+.icon-btn.success {
+  color: #4ade80;
+}
+
+.icon-btn.success:hover {
+  background: color-mix(in srgb, #22c55e 12%, transparent);
+}
+
+.quick-seed {
+  margin-top: 0.5rem;
+}
 
 /* ── Sysreddit admin section ───────────────────────────────────────────────── */
-.sysreddit-header { display: flex; align-items: center; gap: 0.9rem; }
+.sysreddit-header {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
 
 .sysreddit-logo {
   width: 44px;
@@ -1649,9 +2491,18 @@ tr.row-editing { background: color-mix(in srgb, var(--accent-500) 4%, transparen
   flex-shrink: 0;
 }
 
-.sysreddit-logo-icon { width: 22px; height: 22px; color: var(--accent-contrast, #fff); }
+.sysreddit-logo-icon {
+  width: 22px;
+  height: 22px;
+  color: var(--accent-contrast, #fff);
+}
 
-.section-badge-row { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+.section-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
 
 .scope-badge {
   display: inline-flex;
@@ -1701,10 +2552,23 @@ tr.row-editing { background: color-mix(in srgb, var(--accent-500) 4%, transparen
   min-width: 160px;
 }
 
-.static-type-icon { width: 20px; height: 20px; color: var(--text-muted); flex-shrink: 0; }
+.static-type-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
 
-.static-type-chip strong { font-size: 0.875rem; display: block; }
-.static-type-chip p { font-size: 0.75rem; color: var(--text-muted); margin: 0.1rem 0 0; }
+.static-type-chip strong {
+  font-size: 0.875rem;
+  display: block;
+}
+
+.static-type-chip p {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0.1rem 0 0;
+}
 
 
 .icon-catalog-container {
@@ -1763,6 +2627,7 @@ tr.row-editing { background: color-mix(in srgb, var(--accent-500) 4%, transparen
   font-weight: 600;
   color: var(--text-soft);
 }
+
 .carrera-name {
   display: flex;
   align-items: center;
@@ -1788,5 +2653,735 @@ tr.row-editing { background: color-mix(in srgb, var(--accent-500) 4%, transparen
   gap: 10px;
 }
 
+/* --- BOTÓN FLOTANTE --- */
+.admin-help-trigger {
+  position: fixed;
+  bottom: 2rem;
+  left: 2rem;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-soft);
+  padding: 0.6rem 1.1rem;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
 
+.admin-help-trigger:hover {
+  border-color: var(--accent-500);
+  color: var(--text-primary);
+  transform: translateY(-2px);
+}
+
+.icon-svg-help {
+  width: 18px;
+  height: 18px;
+  color: var(--accent-500);
+}
+
+/* --- BACKDROP Y TARJETA DEL MANUAL --- */
+.admin-help-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 8, 18, 0.65);
+  backdrop-filter: blur(4px);
+  display: grid;
+  place-items: center;
+  z-index: 50;
+  padding: 1rem;
+}
+
+.admin-help-card {
+  width: min(480px, 100%);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  animation: adminScaleIn 0.2s ease-out;
+}
+
+@keyframes adminScaleIn {
+  from {
+    transform: scale(0.97);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.admin-help-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-help-header-title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.admin-badge-new {
+  font-size: 0.7rem;
+  background: var(--accent-soft, rgba(251, 146, 60, 0.15));
+  color: var(--accent-500);
+  padding: 0.15rem 0.5rem;
+  border-radius: 50px;
+  width: fit-content;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.admin-help-header h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: var(--text-primary);
+}
+
+.admin-close-btn {
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+/* --- INDICADORES --- */
+.admin-steps-indicator {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.6rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.8rem;
+}
+
+.step-title-highlight {
+  color: var(--accent-500);
+}
+
+.admin-help-body {
+  min-height: 250px;
+}
+
+.admin-step-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+/* --- GRÁFICOS INTERACTIVOS (COMO TU DISEÑO OSCURO) --- */
+.admin-step-graphics {
+  background: var(--bg-muted);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 140px;
+}
+
+.real-mockup-form {
+  width: 100%;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.mockup-form-header {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.7rem;
+  letter-spacing: 0.05rem;
+  text-align: left;
+}
+
+.mockup-inline-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Inputs de simulación calados */
+.mock-input,
+.mock-select,
+.mock-color-picker {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-align: left;
+}
+
+.mock-grid-inputs {
+  display: grid;
+  grid-template-columns: 80px 1fr 100px;
+  gap: 0.4rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mock-color-picker {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.color-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: #22c55e;
+}
+
+.mock-btn-add {
+  background: var(--accent-500, #f97316);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: default;
+}
+
+.mock-btn-add.full {
+  width: 100%;
+}
+
+/* Simulación de las listas de Stacks y Tags */
+.real-mockup-double {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+  width: 100%;
+}
+
+.mock-panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 0.8rem;
+}
+
+.mock-panel-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.6rem;
+  text-align: left;
+}
+
+.mock-chips-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.mock-chip {
+  font-size: 0.72rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.stack-chip {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.tag-chip {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.mock-chip .x {
+  opacity: 0.6;
+  font-size: 0.65rem;
+}
+
+/* --- EXPLICACIÓN --- */
+.admin-step-desc h4 {
+  margin: 0 0 0.35rem 0;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.admin-step-desc p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--text-soft);
+  line-height: 1.45;
+}
+
+/* --- FOOTER --- */
+.admin-help-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  border-top: 1px solid var(--border-color);
+  padding-top: 0.8rem;
+}
+
+.admin-help-footer button {
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.admin-help-footer button.primary {
+  background: var(--accent-500, #f97316);
+  color: white;
+}
+
+.admin-help-footer button.secondary {
+  background: var(--bg-muted);
+  border-color: var(--border-color);
+  color: var(--text-soft);
+}
+
+/* --- BOTÓN FLOTANTE FORO --- */
+.forum-help-trigger {
+  position: fixed;
+  bottom: 2rem;
+  left: 2rem;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-soft);
+  padding: 0.6rem 1.1rem;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.forum-help-trigger:hover {
+  border-color: var(--accent-500);
+  color: var(--text-primary);
+  transform: translateY(-2px);
+}
+
+.icon-svg-help {
+  width: 18px;
+  height: 18px;
+  color: var(--accent-500);
+}
+
+/* --- BACKDROP Y TARJETA DEL MODAL --- */
+.admin-help-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 8, 18, 0.65);
+  backdrop-filter: blur(4px);
+  display: grid;
+  place-items: center;
+  z-index: 50;
+  padding: 1rem;
+}
+
+.admin-help-card {
+  width: min(480px, 100%);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  animation: forumScaleIn 0.2s ease-out;
+}
+
+@keyframes forumScaleIn {
+  from { transform: scale(0.97); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.admin-help-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-help-header-title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.admin-badge-new {
+  font-size: 0.7rem;
+  background: var(--accent-soft, rgba(251, 146, 60, 0.15));
+  color: var(--accent-500);
+  padding: 0.15rem 0.5rem;
+  border-radius: 50px;
+  width: fit-content;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.admin-help-header h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: var(--text-primary);
+}
+
+.admin-close-btn {
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+/* --- INDICADORES --- */
+.admin-steps-indicator {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.6rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.8rem;
+}
+
+.step-title-highlight {
+  color: var(--accent-500);
+}
+
+.admin-help-body {
+  min-height: 240px;
+}
+
+.admin-step-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+/* --- GRÁFICOS MOCKUP OSCUROS --- */
+.admin-step-graphics {
+  background: var(--bg-muted);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 130px;
+}
+
+.real-mockup-form {
+  width: 100%;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.mockup-form-header {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.7rem;
+  letter-spacing: 0.05rem;
+  text-align: left;
+}
+
+.mockup-inline-fields {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.mock-input {
+  flex: 1;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-align: left;
+}
+
+.mock-btn-add {
+  background: var(--accent-500, #f97316);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: default;
+}
+
+/* --- ESTILOS DE CHIPS PARA FOROS Y TIPOS --- */
+.mock-chips-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.mock-chip {
+  font-size: 0.72rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 8px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+/* Categoría de foro - verde/azul del foro real */
+.forum-cat-chip {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.15);
+}
+
+/* Tipo de hilo - naranja o gris suave */
+.forum-tipo-chip {
+  background: rgba(99, 102, 241, 0.1);
+  color: #6366f1;
+  border: 1px solid rgba(99, 102, 241, 0.15);
+}
+
+.mock-chip .x {
+  opacity: 0.6;
+  font-size: 0.65rem;
+}
+
+/* --- EXPLICACIÓN --- */
+.admin-step-desc h4 {
+  margin: 0 0 0.35rem 0;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.admin-step-desc p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--text-soft);
+  line-height: 1.45;
+}
+
+/* --- FOOTER --- */
+.admin-help-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  border-top: 1px solid var(--border-color);
+  padding-top: 0.8rem;
+}
+
+.admin-help-footer button {
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.admin-help-footer button.primary {
+  background: var(--accent-500, #f97316);
+  color: white;
+}
+
+.admin-help-footer button.secondary {
+  background: var(--bg-muted);
+  border-color: var(--border-color);
+  color: var(--text-soft);
+}
+
+/* --- BOTÓN FLOTANTE RECURSOS --- */
+.curaduria-help-trigger {
+  position: fixed;
+  bottom: 2rem;
+  left: 2rem;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-soft);
+  padding: 0.6rem 1.1rem;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.curaduria-help-trigger:hover {
+  border-color: var(--accent-500);
+  color: var(--text-primary);
+  transform: translateY(-2px);
+}
+
+/* --- MOCKUP SPLIT (FORMULARIO + ICONOS) --- */
+.curaduria-mockup-split {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 0.8rem;
+  width: 100%;
+}
+
+.mock-selected-icon-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.preview-box-green {
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+/* Catálogo de Iconify */
+.curaduria-mockup-icons {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 0.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.icons-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  text-align: left;
+}
+
+.icons-tiny-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.35rem;
+}
+
+.tiny-icon {
+  background: var(--bg-muted);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0.4rem;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+}
+
+.tiny-icon.active {
+  border-color: #22c55e;
+  background: rgba(34, 197, 94, 0.1);
+}
+
+/* --- TABLA MOCKUP DE RECURSOS --- */
+.curaduria-mockup-table {
+  width: 100%;
+  max-width: 360px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  overflow: hidden;
+  font-size: 0.72rem;
+}
+
+.curaduria-table-header {
+  background: var(--bg-muted);
+  display: grid;
+  grid-template-columns: 60px 1fr 80px;
+  padding: 0.5rem 0.6rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-align: left;
+}
+
+.curaduria-table-row {
+  display: grid;
+  grid-template-columns: 60px 1fr 80px;
+  padding: 0.6rem;
+  border-top: 1px solid var(--border-color);
+  align-items: center;
+  text-align: left;
+}
+
+.table-icon-green {
+  font-size: 1.1rem;
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.1);
+  padding: 0.2rem;
+  border-radius: 6px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.resource-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  padding-left: 0.4rem;
+}
+
+.mock-btn-delete {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 6px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  cursor: default;
+}
 </style>

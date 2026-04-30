@@ -14,12 +14,27 @@ const prisma_module_1 = require("./prisma/prisma.module");
 const users_module_1 = require("./users/users.module");
 const auth_module_1 = require("./auth/auth.module");
 const mailer_module_1 = require("./mailer/mailer.module");
+const repositories_module_1 = require("./repositories/repositories.module");
+const files_module_1 = require("./files/files.module");
+const Sysreddit_module_1 = require("./Sysreditt/Sysreddit.module");
+const recursos_module_1 = require("./recursoAuxiliar/recursos.module");
+const curso_espacio_module_1 = require("./cursoEspacio/curso-espacio.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, users_module_1.UsersModule, auth_module_1.AuthModule, mailer_module_1.MailerModule],
+        imports: [
+            prisma_module_1.PrismaModule,
+            users_module_1.UsersModule,
+            auth_module_1.AuthModule,
+            mailer_module_1.MailerModule,
+            repositories_module_1.RepositoriesModule,
+            files_module_1.FilesModule,
+            Sysreddit_module_1.SysredditModule,
+            recursos_module_1.RecursosModule,
+            curso_espacio_module_1.CursoEspacioModule,
+        ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
     })

@@ -1,0 +1,19 @@
+{
+  "name": "syshub-cli",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CLI ligera de Syshub para operaciones clone tipo .syshub",
+  "bin": {
+    "syshub": "./bin/syshub.js"
+  },
+  "scripts": {
+    "smoke": "node ./bin/syshub.js --help"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "adm-zip": "0.5.16",
+    "form-data": "^4.0.5"
+  }
+}

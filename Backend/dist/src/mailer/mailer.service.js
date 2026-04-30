@@ -15,13 +15,29 @@ const common_1 = require("@nestjs/common");
 const nodemailer_1 = __importDefault(require("nodemailer"));
 let MailerService = MailerService_1 = class MailerService {
     logger = new common_1.Logger(MailerService_1.name);
+    logVerificationCode(to, code) {
+        this.logger.warn(`MAIL no disponible. Código de verificación para ${to}: ${code}`);
+    }
     async sendVerificationEmail(to, code) {
         const host = process.env.MAIL_HOST;
         const port = Number(process.env.MAIL_PORT ?? 0);
         const user = process.env.MAIL_USER;
         const pass = process.env.MAIL_PASS;
-        if (!host || !port || !user || !pass) {
-            this.logger.warn(`MAIL_* variables no configuradas. Código de verificación para ${to}: ${code}`);
+        const shouldEchoCode = process.env.NODE_ENV !== 'production' ||
+            process.env.MAIL_LOG_CODE_ALWAYS === 'true';
+        if (shouldEchoCode) {
+            this.logger.log(`Código de verificación [DEV] para ${to}: ${code}`);
+        }
+        const placeholderValues = [
+            'smtp.example.com',
+            'usuario@example.com',
+            'tu_clave',
+        ];
+        const usingPlaceholderValues = placeholderValues.includes(host ?? '') ||
+            placeholderValues.includes(user ?? '') ||
+            placeholderValues.includes(pass ?? '');
+        if (!host || !port || !user || !pass || usingPlaceholderValues) {
+            this.logVerificationCode(to, code);
             return;
         }
         const transporter = nodemailer_1.default.createTransport({
@@ -30,13 +46,19 @@ let MailerService = MailerService_1 = class MailerService {
             secure: port === 465,
             auth: { user, pass },
         });
-        await transporter.sendMail({
-            from: process.env.MAIL_FROM ?? user,
-            to,
-            subject: 'Syshub - Código de verificación',
-            text: `Tu código de verificación es: ${code}`,
-            html: `<p>Tu código de verificación es:</p><h2>${code}</h2>`,
-        });
+        try {
+            await transporter.sendMail({
+                from: process.env.MAIL_FROM ?? user,
+                to,
+                subject: 'Syshub - Código de verificación',
+                text: `Tu código de verificación es: ${code}`,
+                html: `<p>Tu código de verificación es:</p><h2>${code}</h2>`,
+            });
+        }
+        catch {
+            this.logger.error(`Error enviando correo de verificación a ${to}. Se usará fallback en consola.`);
+            this.logVerificationCode(to, code);
+        }
     }
 };
 exports.MailerService = MailerService;

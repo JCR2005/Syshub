@@ -406,4 +406,30 @@ export class RepositoriesController {
 
     return { ok: true, repository: repo };
   }
+
+  // repositorios.controller.ts
+
+@Get('espacio/:espacioId')
+@UseGuards(JwtAuthGuard)
+async getReposByEspacio(
+  @Param('espacioId') espacioId: string,
+  @Req() req: any
+) {
+  // 1. Sacamos el ID del usuario del token
+  const usuarioId = Number(req.user.id || req.user.sub);
+
+  // 2. Verificamos si tiene rol de auxiliar o admin
+  // Ajusta 'auxiliar' o 'admin' según los nombres exactos en tu tabla "Role"
+  const rolesUsuario = req.user.roles || [];
+  const isAuxiliar = rolesUsuario.some((rol: any) => 
+    rol.nombre.toLowerCase() === 'auxiliar' || 
+    rol.nombre.toLowerCase() === 'admin'
+  );
+
+  return this.repositoriosService.getRepositoriosPorEspacio(
+    Number(espacioId),
+    usuarioId,
+    isAuxiliar
+  );
+}
 }

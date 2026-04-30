@@ -11,8 +11,8 @@ export declare class AuthController {
     register(dto: RegisterDto): Promise<{
         correoInstitucional: string;
         edad: number | null;
-        bloqueado: boolean;
         nombre: string | null;
+        rutaFotoPerfil: string | null;
         id: number;
     }>;
     preRegister(dto: PreRegisterDto): Promise<{
@@ -25,8 +25,8 @@ export declare class AuthController {
         user: {
             correoInstitucional: string;
             edad: number | null;
-            bloqueado: boolean;
             nombre: string | null;
+            rutaFotoPerfil: string | null;
             id: number;
         };
     }>;
@@ -34,6 +34,11 @@ export declare class AuthController {
         id: number;
         correo: string;
         nombre: string | null;
+        roles: string[];
+        rangos: string[];
+        availableModes: string[];
+        requiresModeSelection: boolean;
+        activeMode: string | null;
         accessToken: string;
         tokenType: string;
         expiresIn: number | import("ms").StringValue | undefined;

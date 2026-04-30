@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,47 +7,715 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id           Int      @id @default(autoincrement())
-  correoInstitucional String @unique
-  contrasena   String
-  edad         Int?
-  bloqueado    Boolean @default(false)
-  nombre       String?
-  carnet       String?
-}
+// ═══════════════════════════════════════════════════════════════════════════════
+// AUTH & USUARIOS
+// ═══════════════════════════════════════════════════════════════════════════════
 
 model PendingUser {
-  id                 Int      @id @default(autoincrement())
   correo             String   @unique
   codigoVerificacion String
   codigoExpiraEn     DateTime
   codigoEnviadoEn    DateTime
   createdAt          DateTime @default(now())
+  id                 Int      @id @default(autoincrement())
+}
+
+model Rango {
+  nombre String @unique
+  id     Int    @id @default(autoincrement())
+
+  usuarios UserRango[]
 }
 
 model Role {
-  id     Int    @id @default(autoincrement())
   nombre String @unique
+  id     Int    @id @default(autoincrement())
+
+  usuarios UserRole[]
+}
+
+model User {
+  correoInstitucional String  @unique
+  contrasena          String
+  edad                Int?
+  bloqueado           Boolean @default(false)
+  nombre              String?
+  carnet              String?
+  id                  Int     @id @default(autoincrement())
+  rutaFotoPerfil      String?
+
+  // Relaciones existentes
+  roles               UserRole[]
+  rangos              UserRango[]
+  repositoriosUsuario Repositorio_Usuario[]
+  repoCommits         RepoCommit[]
+  repoSyncEvents      RepoSyncEvent[]
+
+  // ── Sysreddit ──────────────────────────────────────────────────────────────
+  hilosAutor         HiloForo[]             @relation("HiloForoAutor")
+  hilosParticipante  HiloForo_Usuario[]     @relation("HiloForoUsuarios")
+  valoracionesHilo   ValoracionHiloForo[]   @relation("ValoracionesHilo")
+  comentariosHilo    ComentarioHiloForo[]   @relation("ComentariosHilo")
+  valoracionesComent ValoracionComentario[] @relation("ValoracionesComentario")
+
+  // ── Blogs y Artículos ────────────────────────────────────────────────────
+  blogsAutor              Blog[]
+  articulosAutor          Articulo[]
+  blogComentarios         BlogComentario[]
+  articuloComentarios     ArticuloComentario[]
+  blogValoraciones        BlogValoracion[]
+  articuloValoraciones    ArticuloValoracion[]
+  blogParticipaciones     BlogUser[]
+  articuloParticipaciones ArticuloUser[]
+
+  recursosAuxiliar      Usuario_Recurso_Auxiliar[] @relation("RecursosAuxiliar")
+  cursoEspaciosCreados  CursoEspacio[]             @relation("CursoEspacioCreador")
+  cursoEspacioAuxiliar  CursoEspacioAuxiliar[]
+  cursoEspacioEstudiante CursoEspacioEstudiante[]
+  cursoEspacioRecursos  CursoEspacioRecurso[]      @relation("CursoEspacioRecursoAutor")
+  cursoEspacioRepoLinks CursoEspacioRepositorio[]  @relation("CursoEspacioRepoAutor")
+}
+
+model UserRango {
+  userId  Int
+  rangoId Int
+  id      Int @id @default(autoincrement())
+
+  user  User  @relation(fields: [userId], references: [id])
+  rango Rango @relation(fields: [rangoId], references: [id])
+
+  @@unique([userId, rangoId])
 }
 
 model UserRole {
-  id     Int    @id @default(autoincrement())
   userId Int
   roleId Int
+  id     Int @id @default(autoincrement())
+
+  user User @relation(fields: [userId], references: [id])
+  role Role @relation(fields: [roleId], references: [id])
 
   @@unique([userId, roleId])
 }
 
-model Rango {
-  id     Int    @id @default(autoincrement())
-  nombre String @unique
+// ═══════════════════════════════════════════════════════════════════════════════
+// REPOSITORIOS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model Repositorio {
+  id_repositorio Int    @id @default(autoincrement())
+  nombre         String
+  descripcion    String
+  visibilidad    String @default("public")
+  estrellas      Int    @default(0)
+  vistas         Int    @default(0)
+  id_pensum      Int?
+  id_curso       Int?
+
+  pensum Pensum? @relation(fields: [id_pensum], references: [id_pensum])
+  curso  Curso?  @relation(fields: [id_curso], references: [id_curso])
+
+  usuarios      Repositorio_Usuario[]
+  etiquetas     Etiqueta_Repositorio[]
+  stacks        Stack_Repositorio[]
+  archivos      Archivo_Repositorio[]
+  recursos      Recurso_Repositorio[]
+  commits       RepoCommit[]
+  syncEvents    RepoSyncEvent[]
+  cursoEspacios CursoEspacioRepositorio[]
+
+  @@index([id_pensum])
+  @@index([id_curso])
 }
 
-model UserRango {
-  id      Int    @id @default(autoincrement())
-  userId  Int
-  rangoId Int
+model RepoCommit {
+  id_commit      Int      @id @default(autoincrement())
+  id_repositorio Int
+  id_usuario     Int
+  mensaje        String
+  accion         String   @default("commit")
+  hash_snapshot  String?
+  createdAt      DateTime @default(now())
 
-  @@unique([userId, rangoId])
+  repositorio Repositorio         @relation(fields: [id_repositorio], references: [id_repositorio])
+  usuario     User                @relation(fields: [id_usuario], references: [id])
+  archivos    RepoCommitArchivo[]
+  eventos     RepoSyncEvent[]
+
+  @@index([id_repositorio, createdAt])
+  @@index([id_usuario])
+}
+
+model RepoCommitArchivo {
+  id_commit_archivo Int    @id @default(autoincrement())
+  id_commit         Int
+  ruta              String
+  hash_archivo      String
+  tamano_bytes      Int?
+
+  commit RepoCommit @relation(fields: [id_commit], references: [id_commit])
+
+  @@index([id_commit])
+  @@index([ruta])
+}
+
+model RepoSyncEvent {
+  id_evento      Int      @id @default(autoincrement())
+  id_repositorio Int
+  id_usuario     Int
+  id_commit      Int?
+  accion         String
+  detalle        String?
+  createdAt      DateTime @default(now())
+
+  repositorio Repositorio @relation(fields: [id_repositorio], references: [id_repositorio])
+  usuario     User        @relation(fields: [id_usuario], references: [id])
+  commit      RepoCommit? @relation(fields: [id_commit], references: [id_commit])
+
+  @@index([id_repositorio, createdAt])
+  @@index([id_usuario])
+  @@index([id_commit])
+}
+
+model Repositorio_Usuario {
+  id_repositorio_usuario Int @id @default(autoincrement())
+  id_usuario             Int
+  id_repositorio         Int
+
+  usuario     User        @relation(fields: [id_usuario], references: [id])
+  repositorio Repositorio @relation(fields: [id_repositorio], references: [id_repositorio])
+
+  @@unique([id_usuario, id_repositorio])
+}
+
+model Etiqueta {
+  id_etiqueta     Int    @id @default(autoincrement())
+  nombre_etiqueta String
+
+  repositorios Etiqueta_Repositorio[]
+}
+
+model Carrera {
+  id_carrera Int     @id @default(autoincrement())
+  nombre     String  @unique
+  color      String?
+
+  pensums Pensum[]
+}
+
+model Pensum {
+  id_pensum   Int      @id @default(autoincrement())
+  nombre      String
+  descripcion String?
+  vigente     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  id_carrera Int
+  carrera    Carrera @relation(fields: [id_carrera], references: [id_carrera])
+
+  cursos       Curso[]
+  repositorios Repositorio[]
+
+  areasTecnicas AreaTecnica[]
+
+  @@unique([nombre, id_carrera])
+  @@index([id_carrera])
+}
+
+model AreaTecnica {
+  id_area     Int     @id @default(autoincrement())
+  nombre      String
+  descripcion String?
+  color       String?
+
+  id_pensum Int
+  pensum    Pensum @relation(fields: [id_pensum], references: [id_pensum])
+
+  cursos Curso[]
+
+  @@unique([nombre, id_pensum])
+  @@index([id_pensum])
+}
+
+model Curso {
+  id_curso  Int    @id @default(autoincrement())
+  codigo    String
+  nombre    String
+  semestre  Int
+  id_pensum Int
+  id_area   Int?
+
+  pensum        Pensum         @relation(fields: [id_pensum], references: [id_pensum])
+  area          AreaTecnica?   @relation(fields: [id_area], references: [id_area])
+  repositorios  Repositorio[]
+  espaciosCurso CursoEspacio[]
+
+  @@unique([nombre, id_pensum, semestre])
+  @@unique([codigo, id_pensum])
+  @@index([id_pensum])
+  @@index([id_area])
+}
+
+model CursoEspacio {
+  id_espacio Int      @id @default(autoincrement())
+  anio       Int
+  semestre   Int
+  estado     String   @default("activo")
+  createdAt  DateTime @default(now())
+
+  id_curso Int
+  curso    Curso @relation(fields: [id_curso], references: [id_curso])
+
+  createdById Int
+  creador     User @relation("CursoEspacioCreador", fields: [createdById], references: [id])
+
+  auxiliares   CursoEspacioAuxiliar[]
+  estudiantes  CursoEspacioEstudiante[]
+  recursos     CursoEspacioRecurso[]
+  repositorios CursoEspacioRepositorio[]
+
+  @@unique([id_curso, anio, semestre])
+  @@index([id_curso])
+}
+
+model CursoEspacioAuxiliar {
+  id         Int    @id @default(autoincrement())
+  id_espacio Int
+  id_usuario Int
+  rol        String @default("aux")
+
+  espacio CursoEspacio @relation(fields: [id_espacio], references: [id_espacio], onDelete: Cascade)
+  usuario User         @relation(fields: [id_usuario], references: [id])
+
+  @@unique([id_espacio, id_usuario])
+  @@index([id_usuario])
+}
+
+model CursoEspacioEstudiante {
+  id         Int      @id @default(autoincrement())
+  id_espacio Int
+  id_usuario Int
+  createdAt  DateTime @default(now())
+
+  espacio CursoEspacio @relation(fields: [id_espacio], references: [id_espacio], onDelete: Cascade)
+  usuario User         @relation(fields: [id_usuario], references: [id])
+
+  @@unique([id_espacio, id_usuario])
+  @@index([id_usuario])
+}
+
+model CursoEspacioRecurso {
+  id_recurso_espacio Int      @id @default(autoincrement())
+  nombre             String
+  descripcion        String?
+  url                String
+  createdAt          DateTime @default(now())
+
+  id_espacio Int
+  espacio    CursoEspacio @relation(fields: [id_espacio], references: [id_espacio], onDelete: Cascade)
+
+  id_tipo_recurso Int
+  tipo            Tipo_Recurso @relation(fields: [id_tipo_recurso], references: [id_tipo_recurso])
+
+  createdById Int
+  creador     User @relation("CursoEspacioRecursoAutor", fields: [createdById], references: [id])
+
+  @@index([id_espacio])
+}
+
+model CursoEspacioRepositorio {
+  id        Int      @id @default(autoincrement())
+  destacado Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  id_espacio Int
+  espacio    CursoEspacio @relation(fields: [id_espacio], references: [id_espacio], onDelete: Cascade)
+
+  id_repositorio Int
+  repositorio    Repositorio @relation(fields: [id_repositorio], references: [id_repositorio])
+
+  linkedById Int
+  linkedBy   User @relation("CursoEspacioRepoAutor", fields: [linkedById], references: [id])
+
+  @@unique([id_espacio, id_repositorio])
+  @@index([id_repositorio])
+}
+
+model Etiqueta_Repositorio {
+  id_etiqueta    Int
+  id_repositorio Int
+
+  etiqueta    Etiqueta    @relation(fields: [id_etiqueta], references: [id_etiqueta])
+  repositorio Repositorio @relation(fields: [id_repositorio], references: [id_repositorio])
+
+  @@id([id_etiqueta, id_repositorio])
+}
+
+model Stack {
+  id_stack     Int    @id @default(autoincrement())
+  nombre_stack String
+
+  repositorios Stack_Repositorio[]
+}
+
+model Stack_Repositorio {
+  id_stack       Int
+  id_repositorio Int
+
+  stack       Stack       @relation(fields: [id_stack], references: [id_stack])
+  repositorio Repositorio @relation(fields: [id_repositorio], references: [id_repositorio])
+
+  @@id([id_stack, id_repositorio])
+}
+
+model Archivo {
+  id_archivo      Int      @id @default(autoincrement())
+  nombre_original String?
+  nombre_unico    String?  @unique
+  ruta_relativa   String?
+  url             String
+  createdAt       DateTime @default(now())
+
+  repositorios     Archivo_Repositorio[]
+  recursosAuxiliar Archivo_Recurso_Auxiliar[] @relation("RecursoArchivos")
+}
+
+model Archivo_Repositorio {
+  id_archivo     Int
+  id_repositorio Int
+
+  archivo     Archivo     @relation(fields: [id_archivo], references: [id_archivo])
+  repositorio Repositorio @relation(fields: [id_repositorio], references: [id_repositorio])
+
+  @@id([id_archivo, id_repositorio])
+}
+
+model Tipo_Recurso {
+  id_tipo_recurso Int @id @default(autoincrement())
+
+  slug String @unique
+
+  nombre_recurso String
+
+  descripcion String?
+
+  icono_svg String? @db.Text
+
+  recursos             Recurso_Auxiliar[]
+  cursoEspacioRecursos CursoEspacioRecurso[]
+}
+
+model Recurso_Repositorio {
+  id_recurso     Int
+  id_repositorio Int
+
+  recurso     Recurso_Auxiliar @relation(fields: [id_recurso], references: [id_recurso])
+  repositorio Repositorio      @relation(fields: [id_repositorio], references: [id_repositorio])
+
+  @@id([id_recurso, id_repositorio])
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SYSREDDIT — FOROS
+// Basado en el ER: HiloForo, CategoriaForo, TipoHiloForo, Valoraciones, Comentarios
+// Sin tags, stacks, pensum ni curso — eso es solo para repositorios
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// ── Categorías fijas del foro (las gestiona el admin, no el usuario) ──────────
+// Seed: Desarrollo Web, Bases de Datos, Redes, Algoritmos, Móvil, DevOps, General
+model CategoriaForo {
+  id_categoria Int    @id @default(autoincrement())
+  categoria    String @unique
+
+  hilos     HiloForo_Categoria[]
+  blogs     Blog[]
+  articulos Articulo[]
+}
+
+// ── Tipos de hilo (Pregunta, Discusión, Tutorial, Anuncio) ────────────────────
+model TipoHiloForo {
+  id_tipo Int    @id @default(autoincrement())
+  tipo    String @unique
+
+  hilos     HiloForo_Tipo[]
+  blogs     Blog[]
+  articulos Articulo[]
+}
+
+// ── Hilo del foro ─────────────────────────────────────────────────────────────
+model HiloForo {
+  id_hilo_foro     Int                  @id @default(autoincrement())
+  nombre_hilo_foro String
+  contenido        String
+  coverImageUrl    String?
+  reportado        Boolean              @default(false)
+  isPinned         Boolean              @default(false)
+  isFeatured       Boolean              @default(false)
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+  autorId          Int
+  upvotes          Int                  @default(0)
+  autor            User                 @relation("HiloForoAutor", fields: [autorId], references: [id])
+  categorias       HiloForo_Categoria[]
+  tipos            HiloForo_Tipo[]
+  valoraciones     ValoracionHiloForo[]
+  comentarios      ComentarioHiloForo[]
+  usuarios         HiloForo_Usuario[]
+
+  @@index([autorId])
+  @@index([createdAt])
+}
+
+// ── Blogs ────────────────────────────────────────────────────────────────────
+model Blog {
+  id_blog       Int      @id @default(autoincrement())
+  titulo        String
+  contenido     String
+  coverImageUrl String?
+  upvotes       Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  autorId       Int
+  categoriaId   Int
+  tipoId        Int?
+
+  autor        User             @relation(fields: [autorId], references: [id])
+  categoria    CategoriaForo    @relation(fields: [categoriaId], references: [id_categoria])
+  tipo         TipoHiloForo?    @relation(fields: [tipoId], references: [id_tipo])
+  comentarios  BlogComentario[]
+  valoraciones BlogValoracion[]
+  usuarios     BlogUser[]
+
+  @@index([autorId])
+  @@index([createdAt])
+}
+
+model BlogUser {
+  id_blog_user Int @id @default(autoincrement())
+  blogId       Int
+  userId       Int
+
+  blog Blog @relation(fields: [blogId], references: [id_blog])
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([blogId, userId])
+  @@index([blogId])
+}
+
+model BlogValoracion {
+  id_valoracion Int     @id @default(autoincrement())
+  valoracion    Boolean
+  blogId        Int
+  userId        Int
+
+  blog Blog @relation(fields: [blogId], references: [id_blog])
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([blogId, userId])
+  @@index([blogId])
+}
+
+model BlogComentario {
+  id_comentario Int      @id @default(autoincrement())
+  comentario    String
+  blogId        Int
+  autorId       Int
+  createdAt     DateTime @default(now())
+
+  blog  Blog @relation(fields: [blogId], references: [id_blog], onDelete: Cascade)
+  autor User @relation(fields: [autorId], references: [id])
+
+  @@index([blogId])
+}
+
+// ── Artículos ────────────────────────────────────────────────────────────────
+model Articulo {
+  id_articulo   Int      @id @default(autoincrement())
+  titulo        String
+  contenido     String
+  coverImageUrl String?
+  upvotes       Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  autorId       Int
+  categoriaId   Int
+  tipoId        Int?
+
+  autor        User                 @relation(fields: [autorId], references: [id])
+  categoria    CategoriaForo        @relation(fields: [categoriaId], references: [id_categoria])
+  tipo         TipoHiloForo?        @relation(fields: [tipoId], references: [id_tipo])
+  comentarios  ArticuloComentario[]
+  valoraciones ArticuloValoracion[]
+  usuarios     ArticuloUser[]
+
+  @@index([autorId])
+  @@index([createdAt])
+}
+
+model ArticuloUser {
+  id_articulo_user Int @id @default(autoincrement())
+  articuloId       Int
+  userId           Int
+
+  articulo Articulo @relation(fields: [articuloId], references: [id_articulo])
+  user     User     @relation(fields: [userId], references: [id])
+
+  @@unique([articuloId, userId])
+  @@index([articuloId])
+}
+
+model ArticuloValoracion {
+  id_valoracion Int     @id @default(autoincrement())
+  valoracion    Boolean
+  articuloId    Int
+  userId        Int
+
+  articulo Articulo @relation(fields: [articuloId], references: [id_articulo])
+  user     User     @relation(fields: [userId], references: [id])
+
+  @@unique([articuloId, userId])
+  @@index([articuloId])
+}
+
+model ArticuloComentario {
+  id_comentario Int      @id @default(autoincrement())
+  comentario    String
+  articuloId    Int
+  autorId       Int
+  createdAt     DateTime @default(now())
+
+  articulo Articulo @relation(fields: [articuloId], references: [id_articulo], onDelete: Cascade)
+  autor    User     @relation(fields: [autorId], references: [id])
+
+  @@index([articuloId])
+}
+
+// ── Pivote Hilo ↔ Categoría ───────────────────────────────────────────────────
+model HiloForo_Categoria {
+  id_hilo_foro_categoria Int @id @default(autoincrement())
+  id_hilo_foro           Int
+  id_categoria           Int
+
+  hilo      HiloForo      @relation(fields: [id_hilo_foro], references: [id_hilo_foro], onDelete: Cascade)
+  categoria CategoriaForo @relation(fields: [id_categoria], references: [id_categoria])
+
+  @@unique([id_hilo_foro, id_categoria])
+  @@index([id_hilo_foro])
+}
+
+// ── Pivote Hilo ↔ Tipo ────────────────────────────────────────────────────────
+model HiloForo_Tipo {
+  id_hilo_foro_tipo Int @id @default(autoincrement())
+  id_hilo_foro      Int
+  id_tipo           Int
+
+  hilo HiloForo     @relation(fields: [id_hilo_foro], references: [id_hilo_foro], onDelete: Cascade)
+  tipo TipoHiloForo @relation(fields: [id_tipo], references: [id_tipo])
+
+  @@unique([id_hilo_foro, id_tipo])
+  @@index([id_hilo_foro])
+}
+
+// ── Participantes del hilo ────────────────────────────────────────────────────
+model HiloForo_Usuario {
+  id_hilo_foro_usuario Int @id @default(autoincrement())
+  id_hilo_foro         Int
+  id_usuario           Int
+
+  hilo    HiloForo @relation(fields: [id_hilo_foro], references: [id_hilo_foro], onDelete: Cascade)
+  usuario User     @relation("HiloForoUsuarios", fields: [id_usuario], references: [id])
+
+  @@unique([id_hilo_foro, id_usuario])
+  @@index([id_hilo_foro])
+}
+
+// ── Valoraciones del hilo (upvote/downvote) ───────────────────────────────────
+model ValoracionHiloForo {
+  id_valoracion Int     @id @default(autoincrement())
+  valoracion    Boolean // true = upvote, false = downvote
+  id_hilo_foro  Int
+  id_usuario    Int
+
+  hilo    HiloForo @relation(fields: [id_hilo_foro], references: [id_hilo_foro], onDelete: Cascade)
+  usuario User     @relation("ValoracionesHilo", fields: [id_usuario], references: [id])
+
+  @@unique([id_hilo_foro, id_usuario])
+  @@index([id_hilo_foro])
+}
+
+// ── Comentarios del hilo ──────────────────────────────────────────────────────
+model ComentarioHiloForo {
+  id_comentario Int                    @id @default(autoincrement())
+  comentario    String
+  id_hilo_foro  Int
+  id_usuario    Int
+  upvotes       Int                    @default(0)
+  createdAt     DateTime               @default(now())
+  parentId      Int?
+  hilo          HiloForo               @relation(fields: [id_hilo_foro], references: [id_hilo_foro], onDelete: Cascade)
+  autor         User                   @relation("ComentariosHilo", fields: [id_usuario], references: [id])
+  votos         ValoracionComentario[]
+
+  // Self-relation para replies
+  parent  ComentarioHiloForo?  @relation("CommentReplies", fields: [parentId], references: [id_comentario], onDelete: NoAction, onUpdate: NoAction)
+  replies ComentarioHiloForo[] @relation("CommentReplies")
+
+  @@index([id_hilo_foro])
+  @@index([id_usuario])
+  @@index([parentId])
+}
+
+// ── Valoraciones de comentarios ───────────────────────────────────────────────
+model ValoracionComentario {
+  id           Int     @id @default(autoincrement())
+  valoracion   Boolean
+  comentarioId Int
+  userId       Int
+
+  comentario ComentarioHiloForo @relation(fields: [comentarioId], references: [id_comentario], onDelete: Cascade)
+  usuario    User               @relation("ValoracionesComentario", fields: [userId], references: [id])
+
+  @@unique([comentarioId, userId])
+  @@index([comentarioId])
+}
+
+model Recurso_Auxiliar {
+  id_recurso      Int     @id @default(autoincrement())
+  nombre          String
+  descripcion     String? // ← nuevo
+  id_tipo_recurso Int
+
+  tipo         Tipo_Recurso               @relation(fields: [id_tipo_recurso], references: [id_tipo_recurso])
+  usuarios     Usuario_Recurso_Auxiliar[] // ← nuevo
+  archivos     Archivo_Recurso_Auxiliar[] // ← nuevo
+  repositorios Recurso_Repositorio[]
+}
+
+// 2. AGREGAR estos modelos al final del schema:
+
+// Pivote Usuario ↔ Recurso (quién subió el recurso)
+model Usuario_Recurso_Auxiliar {
+  id_usuario_recurso  Int @id @default(autoincrement())
+  id_usuario          Int
+  id_recurso_auxiliar Int
+
+  usuario User             @relation("RecursosAuxiliar", fields: [id_usuario], references: [id])
+  recurso Recurso_Auxiliar @relation(fields: [id_recurso_auxiliar], references: [id_recurso])
+
+  @@unique([id_usuario, id_recurso_auxiliar])
+  @@index([id_usuario])
+  @@index([id_recurso_auxiliar])
+}
+
+// Pivote Recurso ↔ Archivo (archivos adjuntos del recurso)
+model Archivo_Recurso_Auxiliar {
+  id_archivo_recurso Int @id @default(autoincrement())
+  id_recurso         Int
+  id_archivo         Int
+
+  recurso Recurso_Auxiliar @relation(fields: [id_recurso], references: [id_recurso], onDelete: Cascade)
+  archivo Archivo          @relation("RecursoArchivos", fields: [id_archivo], references: [id_archivo])
+
+  @@unique([id_recurso, id_archivo])
+  @@index([id_recurso])
 }
